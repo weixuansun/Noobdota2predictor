@@ -31,7 +31,7 @@ def save_data(data):
 
 if __name__ == '__main__':
     data = []
-    for step in range(100):
+    for step in range(1):
         raw_data = get_data()
         save_data(raw_data)
 
@@ -44,15 +44,6 @@ if __name__ == '__main__':
 
 
 
-
-#print(r.status_code)
-#print(match_data.text)
-#print(match_data.json())
-#match_data.raise_for_status()
-#print(match_data)
-
-#data_matrix = np.zeros(match_data.__sizeof__())
-#for i in range(32):
 
 
 
