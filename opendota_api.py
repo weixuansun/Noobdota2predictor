@@ -1,15 +1,17 @@
+## get raw dota match data from opendota api
 import requests
 import numpy as np
 import json
 import csv
 import time
 
+
 #url = ('https://api.opendota.com/api/matches/271145478?api_key=3ea68b18-147a-4d37-9d13-68e24a4fd033')
 #r = requests.get(url)
 
 def get_data():
     #match_data = requests.get('https://api.opendota.com/api/matches/3919387348')
-    parameters = {'mmr_descending':'mmr'}
+    parameters = {'mmr_descending':'mmr_descending'}
     response = requests.get('https://api.opendota.com/api/publicMatches',params=parameters)
     #print(response.content.decode('utf-8'))
     if response.status_code ==200:
@@ -30,8 +32,9 @@ def save_data(data: object) -> object:
     for row in data:
         f.writerow(row.values()) #write value
 
-match_data = []
+
 if __name__ == '__main__':
+    match_data = []
     for step in range(300):
         print(step)
         raw_data = get_data()
@@ -40,18 +43,3 @@ if __name__ == '__main__':
             match_data.append(item)
         time.sleep(100)
     save_data(match_data)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
