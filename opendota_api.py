@@ -11,6 +11,7 @@ def get_data():
     #match_data = requests.get('https://api.opendota.com/api/matches/3919387348')
     parameters = {'mmr_descending':'mmr'}
     response = requests.get('https://api.opendota.com/api/publicMatches',params=parameters)
+    #print(response.content.decode('utf-8'))
     if response.status_code ==200:
         return response
     else:
@@ -22,18 +23,23 @@ def get_data():
 ########
 #json.dumps() transfer python data structure to json
 #json.loads() transfer json data to python data structure
-def save_data(data):
-    data = json.loads(data.content.decode('utf-8'))
+def save_data(data: object) -> object:
+    #data = json.loads(data.content.decode('utf-8'))
     f = csv.writer(open('data.csv', 'w'))  #
     f.writerow(data[0].keys()) #header
     for row in data:
         f.writerow(row.values()) #write value
 
+match_data = []
 if __name__ == '__main__':
-    data = []
-    for step in range(1):
+    for step in range(300):
+        print(step)
         raw_data = get_data()
-        save_data(raw_data)
+        raw_data = json.loads(raw_data.content.decode('utf-8'))
+        for item in raw_data:
+            match_data.append(item)
+        time.sleep(100)
+    save_data(match_data)
 
 
 
