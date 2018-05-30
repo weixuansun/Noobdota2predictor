@@ -4,6 +4,7 @@ import numpy as np
 import json
 import csv
 import time
+import urllib3
 
 
 #url = ('https://api.opendota.com/api/matches/271145478?api_key=3ea68b18-147a-4d37-9d13-68e24a4fd033')
@@ -32,14 +33,29 @@ def save_data(data: object) -> object:
     for row in data:
         f.writerow(row.values()) #write value
 
+def get_hero_data(hero_id):
+    # http = urllib3.PoolManager()
+    heroes = requests.get('https://api.opendota.com/api/heroes')
+    # print(heroes)
+    # print(heroes.content)
+    # print(heroes.content.decode('UTF-8'))
+    heroes_dict = json.loads(heroes.content.decode('utf-8'))
+    print(heroes_dict)
+    print(heroes_dict[hero_id-1]['localized_name'])
+
 
 if __name__ == '__main__':
-    match_data = []
-    for step in range(300):
-        print(step)
-        raw_data = get_data()
-        raw_data = json.loads(raw_data.content.decode('utf-8'))
-        for item in raw_data:
-            match_data.append(item)
-        time.sleep(100)
-    save_data(match_data)
+    # match_data = []
+    # for step in range(300):
+    #     print(step)
+    #     raw_data = get_data()
+    #     raw_data = json.loads(raw_data.content.decode('utf-8'))
+    #     for item in raw_data:
+    #         match_data.append(item)
+    #     time.sleep(100)
+    # save_data(match_data)
+    get_hero_data(1)
+
+
+
+
