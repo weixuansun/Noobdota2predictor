@@ -5,6 +5,7 @@ import json
 import csv
 import time
 import urllib3
+import  tensorflow as tf
 
 
 
@@ -43,7 +44,9 @@ class data_process(object):
         # print(heroes.content.decode('UTF-8'))
         heroes_dict = json.loads(heroes.content.decode('utf-8'))
         print(heroes_dict)
-        print(heroes_dict[hero_id-1]['localized_name'])
+        # print(heroes_dict[hero_id-1]['localized_name'])
+        # for i in range(115):
+        #     print(heroes_dict[i])
 
     ##process csv match data for training
     def process_data(self,filename):
@@ -53,10 +56,11 @@ class data_process(object):
             print(len(f))
             data_matrix = np.zeros([int((len(f)-1)/2),11])
             for i in range(2,len(f),2):
-                if f[i][2] == 'TRUE':
-                    data_matrix[int((i/2)-1),0] = 1
-                else:
-                    data_matrix[(int(i/2)-1),0] = 0
+                data_matrix[int((i / 2) - 1), 0] = 1 if f[i][2] == 'TRUE' else 0
+                # if f[i][2] == 'TRUE':
+                #     data_matrix[int((i/2)-1),0] = 1
+                # else:
+                #     data_matrix[(int(i/2)-1),0] = 0
                 radiant_team = f[i][12]
                 dire_team = f[i][13]
                 radiant_team = radiant_team.split(',',4)
@@ -66,9 +70,19 @@ class data_process(object):
                 data_matrix[(int(i / 2) - 1), 1:6] = radiant_team[0:5]
                 data_matrix[(int(i / 2) - 1), 6:11] = dire_team[0:5]
                 # print(radiant_team)
-            print(data_matrix)
-            print(np.shape(data_matrix))
-        return (data_matrix)
+            # print(data_matrix)
+            # print(np.shape(data_matrix))
+        # print(data_matrix.shape)
+        heros_data = data_matrix[0:data_matrix.shape[0],1:11]
+        results_data = data_matrix[0:data_matrix.shape[0],0]
+        print(heros_data.shape)
+        return heros_data, results_data
+
+    # transfer match data into one shot data
+    def match_data_to_features(self,heros_data,results_data):
+        heros_data_matrix = np.zeros([len(heros_data),70])
+
+        return heros_data_matrix
 
 
 
@@ -77,9 +91,40 @@ class data_process(object):
 
 
 
+# class train(object):
+
+def train(heros_data_matrix, results_data):
+    # match_data = np.asanyarray(match_data,np.float32)
+
+    x = tf.placeholder(tf.int8,[None,1150])
+    y = tf.placeholder(tf.int8,[None,1])
+
+    features_placeholder = tf.placeholder(tf.float32,[1,1150])
+    labels_placeholder = tf.placeholder(tf.float32,[1])
+
+    dataset = tf.data.Dataset.from_tensor_slices((heros_data,results_data))
+    print(dataset)
 
 
 
+
+
+    # W = tf.Variable(tf.zeros[1150,1])
+    # b = tf.Variable(tf.zeros[1])
+    # prediction = tf.nn.softmax(tf.matmul(x,W)+b)
+    # # build net work
+    # loss = tf.reduce_min(tf.square(y-prediction))
+    #
+    # train = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
+    #
+    # # save result to a boolean list
+    # correct_prediction = tf.equal(y, prediction)
+    # accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
+
+    # with tf.Session() as sess:
+    #     sess.run(tf.global_variables_initializer())
+    #     for epoch in range(20):
+    #         sess.run(train,feed_dict={x:match_data[]}
 
 
 if __name__ == '__main__':
@@ -98,9 +143,9 @@ if __name__ == '__main__':
 
 
     # data_process_1.get_hero_data(1)
+    heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
+    # train(heros_data,results_data)
 
-    data_list = data_process_1.process_data('/home/sun/dota2predictor/Noobdota2predictor/data.csv')
-    # print(data_list)
     #
 
     ###caogaozhi
@@ -109,13 +154,23 @@ if __name__ == '__main__':
     # print(a)
     # print(a[1,2])
     # print(np.zeros([5,3]))
-    # b = np.zeros(5)
+    b = np.zeros([5,3])
+    print(b.shape[1])
     # print(b)
     # a = [11,12,12,1,12,33,4,5]
     # print(a[1:5])
     # b[0:5] = a[1:6]
     # print(b)
     #
+    # a = np.array([1,2,3])
+    # b = np.array([1,2,3])
+    # c = tf.equal(a,b)
+    # print(c)
+    # a = tf.ones([100,1150])
+    # # print(a)
+    # w = tf.ones([1150,1])
+    # b = tf.matmul(a
+
 
 
 
