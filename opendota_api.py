@@ -79,10 +79,14 @@ class data_process(object):
         return heros_data, results_data
 
     # transfer match data into one shot data
+    # write a array or csv manually to map heros ID to a binary matrix
     def match_data_to_features(self,heros_data,results_data):
         heros_data_matrix = np.zeros([len(heros_data),70])
+        
+
 
         return heros_data_matrix
+
 
 
 
@@ -154,10 +158,10 @@ if __name__ == '__main__':
     # print(a)
     # print(a[1,2])
     # print(np.zeros([5,3]))
-    b = np.zeros([5,3])
-    print(b.shape[1])
-    # print(b)
-    # a = [11,12,12,1,12,33,4,5]
+    # b = np.zeros([5,3])
+    # print(b.shape[1])
+    # # print(b)
+    # # a = [11,12,12,1,12,33,4,5]
     # print(a[1:5])
     # b[0:5] = a[1:6]
     # print(b)
