@@ -90,19 +90,6 @@ class data_process(object):
 
         return ret
 
-
-    # write a array or csv manually to map heros ID to a binary matrix
-    # def match_data_to_features(self):
-    #     heros_id = np.arange(1,120)
-    #     print(heros_id.shape)
-    #     # heros_data_matrix = np.zeros([len(heros_data),70])
-    #     heros_features_matrix = np.zeros([120,1])
-    #     for i in range(heros_id.shape[0]):
-    #         heros_features_matrix[i] = str(np.binary_repr(heros_id[i]))
-    #     print(heros_features_matrix)
-        # (heros_id[:, None] == np.arange(heros_id.max()) + 1).astype(int)
-        # print(heros_id)
-
     def map_heros_data_matrix(self, heros_data, heros_dict):
         heros_features = np.zeros([heros_data.shape[0],70])
         for i in range(heros_data.shape[0]):
