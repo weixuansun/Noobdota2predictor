@@ -1,4 +1,3 @@
-## get raw dota match data from opendota api
 import requests
 import numpy as np
 import json
@@ -37,7 +36,6 @@ class data_process(object):
             f.writerow(row.values()) #write value
 
     def get_hero_data(self, hero_id):
-        # http = urllib3.PoolManager()
         heroes = requests.get('https://api.opendota.com/api/heroes')
         # print(heroes)
         # print(heroes.content)
@@ -69,23 +67,54 @@ class data_process(object):
                 # print(dire_team)
                 data_matrix[(int(i / 2) - 1), 1:6] = radiant_team[0:5]
                 data_matrix[(int(i / 2) - 1), 6:11] = dire_team[0:5]
-                # print(radiant_team)
-            # print(data_matrix)
-            # print(np.shape(data_matrix))
-        # print(data_matrix.shape)
         heros_data = data_matrix[0:data_matrix.shape[0],1:11]
         results_data = data_matrix[0:data_matrix.shape[0],0]
-        print(heros_data.shape)
+        # print(heros_data.shape)
         return heros_data, results_data
-
     # transfer match data into one shot data
+    def vec_bin_array(self, arr, m):
+        """
+        Arguments:
+        arr: Numpy array of positive integers
+        m: Number of bits of each integer to retain
+
+        Returns a copy of arr with every element replaced with a bit vector.
+        Bits encoded as int8's.
+        """
+        to_str_func = np.vectorize(lambda x: np.binary_repr(x).zfill(m))
+        strs = to_str_func(arr)
+        ret = np.zeros(list(arr.shape) + [m], dtype=np.int8)
+        for bit_ix in range(0, m):
+            fetch_bit_func = np.vectorize(lambda x: x[bit_ix] == '1')
+            ret[..., bit_ix] = fetch_bit_func(strs).astype("int8")
+
+        return ret
+
+
     # write a array or csv manually to map heros ID to a binary matrix
-    def match_data_to_features(self,heros_data,results_data):
-        heros_data_matrix = np.zeros([len(heros_data),70])
-        
+    # def match_data_to_features(self):
+    #     heros_id = np.arange(1,120)
+    #     print(heros_id.shape)
+    #     # heros_data_matrix = np.zeros([len(heros_data),70])
+    #     heros_features_matrix = np.zeros([120,1])
+    #     for i in range(heros_id.shape[0]):
+    #         heros_features_matrix[i] = str(np.binary_repr(heros_id[i]))
+    #     print(heros_features_matrix)
+        # (heros_id[:, None] == np.arange(heros_id.max()) + 1).astype(int)
+        # print(heros_id)
+
+    def map_heros_data_matrix(self, heros_data, heros_dict):
+        heros_features = np.zeros([heros_data.shape[0],70])
+        for i in range(heros_data.shape[0]):
+            for j in range(10):
+                heros_features[i,(7*j):(7*j+7)] = heros_dict[heros_data[i,j]]
+
+        return heros_features
 
 
-        return heros_data_matrix
+
+
+
 
 
 
@@ -97,16 +126,16 @@ class data_process(object):
 
 # class train(object):
 
-def train(heros_data_matrix, results_data):
+def train(heros_features, results_data):
     # match_data = np.asanyarray(match_data,np.float32)
 
-    x = tf.placeholder(tf.int8,[None,1150])
+    x = tf.placeholder(tf.int8,[None,70])
     y = tf.placeholder(tf.int8,[None,1])
 
-    features_placeholder = tf.placeholder(tf.float32,[1,1150])
+    features_placeholder = tf.placeholder(tf.float32,[1,70])
     labels_placeholder = tf.placeholder(tf.float32,[1])
 
-    dataset = tf.data.Dataset.from_tensor_slices((heros_data,results_data))
+    dataset = tf.data.Dataset.from_tensor_slices((heros_features,results_data))
     print(dataset)
 
 
@@ -147,10 +176,19 @@ if __name__ == '__main__':
 
 
     # data_process_1.get_hero_data(1)
+    heros_id = np.arange(1, 121)
+    heros_id_matrix = data_process_1.vec_bin_array(heros_id,7)
+    heros_dict = dict(zip(heros_id,heros_id_matrix))
+    print(heros_dict)
     heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
-    # train(heros_data,results_data)
+    # print(heros_data.shape[1])
+    heros_features = data_process_1.map_heros_data_matrix(heros_data,heros_dict)
+    # print(heros_features.shape)
 
-    #
+    train(heros_features,results_data)
+
+
+
 
     ###caogaozhi
     # a = np.array([[1,2,3],[2,3,4]])
