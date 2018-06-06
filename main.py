@@ -6,11 +6,6 @@ import time
 import urllib3
 import  tensorflow as tf
 
-
-
-
-
-
 #url = ('https://api.opendota.com/api/matches/271145478?api_key=3ea68b18-147a-4d37-9d13-68e24a4fd033')
 #r = requests.get(url)
 
@@ -69,6 +64,7 @@ class data_process(object):
                 data_matrix[(int(i / 2) - 1), 6:11] = dire_team[0:5]
         heros_data = data_matrix[0:data_matrix.shape[0],1:11]
         results_data = data_matrix[0:data_matrix.shape[0],0]
+        # results_data = np.transpose(results_data)
         # print(heros_data.shape)
         return heros_data, results_data
     # transfer match data into one shot data
@@ -87,7 +83,6 @@ class data_process(object):
         for bit_ix in range(0, m):
             fetch_bit_func = np.vectorize(lambda x: x[bit_ix] == '1')
             ret[..., bit_ix] = fetch_bit_func(strs).astype("int8")
-
         return ret
 
     def map_heros_data_matrix(self, heros_data, heros_dict):
@@ -95,19 +90,7 @@ class data_process(object):
         for i in range(heros_data.shape[0]):
             for j in range(10):
                 heros_features[i,(7*j):(7*j+7)] = heros_dict[heros_data[i,j]]
-
         return heros_features
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -116,41 +99,47 @@ class data_process(object):
 def train(heros_features, results_data):
     # match_data = np.asanyarray(match_data,np.float32)
 
-    x = tf.placeholder(tf.int8,[None,70])
-    y = tf.placeholder(tf.int8,[None,1])
+    x = tf.placeholder(tf.float32,[None, 70])
+    y = tf.placeholder(tf.float32,[None,1])
 
-    features_placeholder = tf.placeholder(tf.float32,[1,70])
-    labels_placeholder = tf.placeholder(tf.float32,[1])
+    dataset = tf.data.Dataset.from_tensor_slices((x,y))
+    iter = dataset.make_initializable_iterator()
+    features, labels = iter.get_next()
+    # print(dataset)
 
-    dataset = tf.data.Dataset.from_tensor_slices((heros_features,results_data))
-    print(dataset)
+    W = tf.Variable(tf.zeros([70,1]))
+    b = tf.Variable(tf.zeros([1]))
+    prediction = tf.nn.sigmoid(tf.matmul(x,W)+b)
+    # cost
 
-
-
-
-
-    # W = tf.Variable(tf.zeros[1150,1])
-    # b = tf.Variable(tf.zeros[1])
-    # prediction = tf.nn.softmax(tf.matmul(x,W)+b)
-    # # build net work
-    # loss = tf.reduce_min(tf.square(y-prediction))
+    loss = tf.reduce_min(tf.nn.softmax_cross_entropy_with_logits(logits=prediction,labels=y))
     #
-    # train = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
+    train = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
     #
-    # # save result to a boolean list
-    # correct_prediction = tf.equal(y, prediction)
-    # accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
+    # save result to a boolean list
+    correct_prediction = tf.equal(y, tf.round(prediction))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
 
-    # with tf.Session() as sess:
-    #     sess.run(tf.global_variables_initializer())
-    #     for epoch in range(20):
-    #         sess.run(train,feed_dict={x:match_data[]}
+
+    with tf.Session() as sess:
+        sess.run(tf.global_variables_initializer())
+        sess.run(iter.initializer, feed_dict={x: heros_features, y: results_data})
+        for epoch in range(20):
+            features,labels = sess.run(iter.get_next())
+            features = np.reshape(features,[1,70])
+            labels = np.reshape(labels,[1,1])
+            print(features.shape,labels.shape)
+            sess.run(train,feed_dict={x:features, y:labels})
+            acc = sess.run(accuracy, feed_dict={x:features,y:labels})
+            print(acc)
+
 
 
 if __name__ == '__main__':
     data_process_1 = data_process()
 
-    #  collect data
+    #  collect data from opendota
+    ###################
     # match_data = []
     # for step in range(300):
     #     print(step)
@@ -160,7 +149,7 @@ if __name__ == '__main__':
     #         match_data.append(item)
     #     time.sleep(60)
     # data_process_1.save_data(match_data)
-
+    ##################
 
     # data_process_1.get_hero_data(1)
     heros_id = np.arange(1, 121)
@@ -168,37 +157,21 @@ if __name__ == '__main__':
     heros_dict = dict(zip(heros_id,heros_id_matrix))
     print(heros_dict)
     heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
+    results_data = np.transpose(results_data)
+    print(results_data.shape)
+    results_data = np.reshape(results_data,[30000,1])
+    print(results_data)
     # print(heros_data.shape[1])
+    #  todo: sort heros of both team by positions: carry, mid, initiate, support.
     heros_features = data_process_1.map_heros_data_matrix(heros_data,heros_dict)
-    # print(heros_features.shape)
-
+    print(heros_features)
     train(heros_features,results_data)
 
 
 
 
-    ###caogaozhi
-    # a = np.array([[1,2,3],[2,3,4]])
-    # print(a[0:100,1])
-    # print(a)
-    # print(a[1,2])
-    # print(np.zeros([5,3]))
-    # b = np.zeros([5,3])
-    # print(b.shape[1])
-    # # print(b)
-    # # a = [11,12,12,1,12,33,4,5]
-    # print(a[1:5])
-    # b[0:5] = a[1:6]
-    # print(b)
-    #
-    # a = np.array([1,2,3])
-    # b = np.array([1,2,3])
-    # c = tf.equal(a,b)
-    # print(c)
-    # a = tf.ones([100,1150])
-    # # print(a)
-    # w = tf.ones([1150,1])
-    # b = tf.matmul(a
+
+
 
 
 
