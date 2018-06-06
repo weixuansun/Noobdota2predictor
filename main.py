@@ -97,6 +97,12 @@ class data_process(object):
 # class train(object):
 
 def train(heros_features, results_data):
+    learning_rate = 0.001
+    training_epochs = 10
+    batch_size = 100
+    display_step = 1
+
+
     # match_data = np.asanyarray(match_data,np.float32)
 
     x = tf.placeholder(tf.float32,[None, 70])
@@ -117,21 +123,26 @@ def train(heros_features, results_data):
     train = tf.train.GradientDescentOptimizer(0.2).minimize(loss)
     #
     # save result to a boolean list
-    correct_prediction = tf.equal(y, tf.round(prediction))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
+    # correct_prediction = tf.equal(y, tf.round(prediction))
+    # accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
 
 
     with tf.Session() as sess:
         sess.run(tf.global_variables_initializer())
         sess.run(iter.initializer, feed_dict={x: heros_features, y: results_data})
-        for epoch in range(20):
-            features,labels = sess.run(iter.get_next())
-            features = np.reshape(features,[1,70])
-            labels = np.reshape(labels,[1,1])
-            print(features.shape,labels.shape)
-            sess.run(train,feed_dict={x:features, y:labels})
-            acc = sess.run(accuracy, feed_dict={x:features,y:labels})
-            print(acc)
+        for epoch in range(training_epochs):
+            total_batch = int(len(results_data)/batch_size)
+            print(total_batch)
+            x_batches = np.array_split(heros_features,total_batch)
+            y_batches = np.array_split(results_data,total_batch)
+            for i in range(total_batch):
+                print(i)
+                batch_x, batch_y = x_batches[i],y_batches[i]
+                sess.run(train,feed_dict={x:batch_x, y:batch_y})
+            # if epoch%display_step == 0 :
+            #     print(...)
+                # acc = sess.run(accuracy, feed_dict={x:features,y:labels})
+                # print(acc)
 
 
 
