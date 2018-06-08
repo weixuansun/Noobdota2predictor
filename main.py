@@ -106,9 +106,8 @@ def train(heros_features, results_data,test_heros_features, test_result_data):
     x = tf.placeholder(tf.float32,[None, 70])
     y = tf.placeholder(tf.float32,[None,1])
 
-    dataset = tf.data.Dataset.from_tensor_slices((x,y))
-    iter = dataset.make_initializable_iterator()
-    features, labels = iter.get_next()
+    # dataset = tf.data.Dataset.from_tensor_slices((x,y))
+    # iter = dataset.make_initializable_iterator()
     # print(dataset)
 
 
@@ -140,7 +139,7 @@ def train(heros_features, results_data,test_heros_features, test_result_data):
                 batch_x, batch_y = x_batches[i],y_batches[i]
                 # print(batch_x)
                 # print(batch_y)
-                pre = sess.run(prediction, feed_dict={x: batch_x, y: batch_y})
+                # pre = sess.run(prediction, feed_dict={x: batch_x, y: batch_y})
                 # print(pre)
                 # print(batch_x.shape,batch_y.shape)
                 _, c = sess.run([train, loss],feed_dict={x:batch_x, y:batch_y})
@@ -150,6 +149,13 @@ def train(heros_features, results_data,test_heros_features, test_result_data):
             if epoch%display_step == 0 :
                 print("Epoch:", '%04d' % (epoch+1), "cost=", "{:.9f}".format(avg_cost))
         print('training finished')
+
+        # test model
+        correct_prediction = tf.equal(tf.round(prediction),y)
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction,'float'))
+        print('accuracy:', accuracy.eval({x:test_heros_features, y:test_results_data}))
+
+
 
 
             # if epoch%display_step == 0 :
