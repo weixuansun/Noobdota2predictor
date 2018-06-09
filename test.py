@@ -5,6 +5,7 @@ import csv
 import time
 import urllib3
 import  tensorflow as tf
+from data_process import data_process
 
 # a = np.array([[1,2,3,4],[2,3,4,5]])
 # print(a[1,0:3])
@@ -25,6 +26,10 @@ import  tensorflow as tf
 #     print(e1.shape)
 #     print(e3)
 #
-a = np.zeros([30000,1])
-b = np.array_split(a,100)
-print(b[1])
+w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    # sess.run(tf.initialize_all_variables())  #比较旧一点的初始化变量方法
+    print(w1)
+    print(sess.run(w1))
