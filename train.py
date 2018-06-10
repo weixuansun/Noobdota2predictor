@@ -46,6 +46,8 @@ def net(x,weights,biases):
     dire_heros = x[:,35:70]
     team_radiant = tf.add(tf.matmul(radiant_heros,weights['h1']), biases['b1'])
     team_dire = tf.add(tf.matmul(radiant_heros, weights['h2']), biases['b2'])
+    team_radiant_2 = tf.add(tf.matmul(team_radiant,weights['h3']), biases['b3'])
+    team_dire_2 = tf.add(tf.matmul(team_dire, weights['h4']), biases['b4'])
     # Hidden layer with RELU activation
     # layer_1 = tf.add(tf.matmul(x, weights['h1']), biases['b1'])
     # layer_1 = tf.nn.sigmoid(layer_1)
@@ -53,25 +55,29 @@ def net(x,weights,biases):
     # layer_2 = tf.add(tf.matmul(layer_1, weights['h2']), biases['b2'])
     # layer_2 = tf.nn.sigmoid(layer_2)
     # Output layer with linear activation
-    out_layer = tf.nn.sigmoid(tf.subtract(team_radiant,team_dire))
+    out_layer = tf.nn.sigmoid(tf.subtract(team_radiant_2,team_dire_2))
     return out_layer
 
 weights = {
-    'h1':tf.Variable(tf.random_normal([35,1])),
-    'h2':tf.Variable(tf.random_normal([35,1])),
+    'h1':tf.Variable(tf.random_normal([35,35])),
+    'h2':tf.Variable(tf.random_normal([35,35])),
+    'h3': tf.Variable(tf.random_normal([35, 1])),
+    'h4': tf.Variable(tf.random_normal([35, 1])),
     'out': tf.Variable(tf.random_normal([70,1]))
 }
 
 biases = {
-    'b1':tf.Variable(tf.random_normal([1])),
-    'b2':tf.Variable(tf.random_normal([1])),
+    'b1':tf.Variable(tf.random_normal([35])),
+    'b2':tf.Variable(tf.random_normal([35])),
+    'b3':tf.Variable(tf.random_normal([1])),
+    'b4':tf.Variable(tf.random_normal([1])),
     'out': tf.Variable(tf.random_normal([1]))
 }
 
 prediction = net(x,weights,biases)
 
 correct_prediction = tf.equal(tf.round(prediction), y)
-accuracy = tf.reduce_mean(tf.cast(correct_prediction, 'float'))
+accuracy = tf.reduce_mean(tf.cast(correct_prediction, 'float32'))
 loss = tf.reduce_min(tf.nn.sigmoid_cross_entropy_with_logits(logits=prediction, labels=y))
 #
 train = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(loss)
@@ -99,18 +105,21 @@ with tf.Session() as sess:
             # print(batch_x.shape,batch_y.shape)
             _, c = sess.run([train, loss], feed_dict={x: batch_x, y: batch_y})
             acc = sess.run(accuracy, feed_dict={x: batch_x, y: batch_y})
+            pre = sess.run(prediction,feed_dict={x: batch_x, y: batch_y})
+            # print(pre)
 
 
             # print(c)
             # avg_cost += c / total_batch
 
         if epoch % display_step == 0:
+            # print(pre)
             print(acc)
         #     print("Epoch:", '%04d' % (epoch + 1), "cost=", "{:.9f}".format(avg_cost))
 
         correct_prediction = tf.equal(tf.round(prediction), y)
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, 'float'))
-        # print('accuracy:', accuracy.eval({x: test_heros_features, y: test_results_data}))
+        print('accuracy:', accuracy.eval({x: test_heros_features, y: test_results_data}))
     print('training finished')
 
     # test model
