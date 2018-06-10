@@ -26,10 +26,13 @@ from data_process import data_process
 #     print(e1.shape)
 #     print(e3)
 #
-w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))
-
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
-    # sess.run(tf.initialize_all_variables())  #比较旧一点的初始化变量方法
-    print(w1)
-    print(sess.run(w1))
+# w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))
+#
+# with tf.Session() as sess:
+#     sess.run(tf.global_variables_initializer())
+#     # sess.run(tf.initialize_all_variables())  #比较旧一点的初始化变量方法
+#     print(w1)
+#     print(sess.run(w1))
+a = np.zeros([10,10])
+b = a[:,0:5]
+print(b)
