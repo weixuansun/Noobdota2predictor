@@ -7,32 +7,41 @@ import urllib3
 import  tensorflow as tf
 from data_process import data_process
 
-# a = np.array([[1,2,3,4],[2,3,4,5]])
-# print(a[1,0:3])
-# for i in range(10):
-#     print(i)
-# a = tf.Variable(tf.ones([100,10]))
-# b = tf.Variable(tf.ones([10,100]))
-# c = tf.matmul(a,b)
-# d = tf.nn.sigmoid(tf.matmul(a,b))
-# e = tf.round(d)
-#
-#
-# with tf.Session() as sess:
-#     sess.run(tf.global_variables_initializer())
-#     e1 = sess.run(c)
-#     e2 = sess.run(d)
-#     e3 = sess.run(e)
-#     print(e1.shape)
-#     print(e3)
-#
-# w1 = tf.Variable(tf.random_normal([2, 3], stddev=1, seed=1))
-#
-# with tf.Session() as sess:
-#     sess.run(tf.global_variables_initializer())
-#     # sess.run(tf.initialize_all_variables())  #比较旧一点的初始化变量方法
-#     print(w1)
-#     print(sess.run(w1))
-a = np.zeros([10,10])
-b = a[:,0:5]
-print(b)
+
+
+data_process_1 = data_process()
+
+# create heros dict
+heros_id = np.arange(1, 121)
+heros_id_matrix = data_process_1.vec_bin_array(heros_id, 7)
+heros_dict = dict(zip(heros_id, heros_id_matrix))
+
+# get training data and test data
+heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
+test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data_2.csv')
+
+test_results_data = np.reshape(test_results_data, [30000, 2])
+results_data = np.reshape(results_data, [30000, 2])
+# print(test_results_data)
+# print(results_data)
+
+# print(results_data)
+# print(heros_data.shape)
+
+#  todo: sort heros of both team by positions: carry, mid, initiate, support.
+
+##map the heros data to a binary matrix
+heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict)
+test_heros_features = data_process_1.map_heros_data_matrix(test_heros_data, heros_dict)
+# print(heros_features)
+# print(test_heros_features)
+
+batch_size = 100
+total_batch = int(10000/batch_size)
+x_batches = np.array_split(heros_features, total_batch)
+y_batches = np.array_split(results_data, total_batch)
+prine(heros_features)
+print(results_data)
+
+print(x_batches)
+print(y_batches)

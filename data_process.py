@@ -47,23 +47,23 @@ class data_process(object):
             f = csv.reader(csv_file)
             f = list(f)
             # print(len(f))
-            data_matrix = np.zeros([int((len(f)-1)/2),11])
+            data_matrix = np.zeros([int((len(f)-1)/2),12])
             for i in range(2,len(f),2):
-                data_matrix[int((i / 2) - 1), 0] = 1 if f[i][2] == 'TRUE' else 0
-                # if f[i][2] == 'TRUE':
-                #     data_matrix[int((i/2)-1),0] = 1
-                # else:
-                #     data_matrix[(int(i/2)-1),0] = 0
+                # print(f[i][2])
+                # if f[i][2] =='True' or
+                data_matrix[int((i / 2) - 1), 0:2] = [1,0] if f[i][2] == 'True' or f[i][2] =='TRUE' else [0,1]
+                # print(data_matrix[int((i / 2) - 1), 0:2])
                 radiant_team = f[i][12]
                 dire_team = f[i][13]
                 radiant_team = radiant_team.split(',',4)
                 dire_team = dire_team.split(',',4)
                 # print(radiant_team)
                 # print(dire_team)
-                data_matrix[(int(i / 2) - 1), 1:6] = radiant_team[0:5]
-                data_matrix[(int(i / 2) - 1), 6:11] = dire_team[0:5]
-        heros_data = data_matrix[0:data_matrix.shape[0],1:11]
-        results_data = data_matrix[0:data_matrix.shape[0],0]
+                data_matrix[(int(i / 2) - 1), 2:7] = radiant_team[0:5]
+                data_matrix[(int(i / 2) - 1), 7:12] = dire_team[0:5]
+        # print(data_matrix)
+        heros_data = data_matrix[0:data_matrix.shape[0],2:12]
+        results_data = data_matrix[0:data_matrix.shape[0],0:2]
         # results_data = np.transpose(results_data)
         # print(heros_data.shape)
         return heros_data, results_data
@@ -109,23 +109,23 @@ if __name__ == '__main__':
     ##################
 
     # data_process_1.get_hero_data(1)
-    heros_id = np.arange(1, 121)
-    heros_id_matrix = data_process_1.vec_bin_array(heros_id,7)
-    heros_dict = dict(zip(heros_id,heros_id_matrix))
-    # print(heros_dict)
-    heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
-    test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data_2.csv')
-    # results_data = np.transpose(results_data)
-    # print(results_data.shape)
-    test_results_data = np.reshape(test_results_data,[30000,1])
-    results_data = np.reshape(results_data,[30000,1])
-    # print(results_data)
-    print(heros_data.shape)
-    #  todo: sort heros of both team by positions: carry, mid, initiate, support.
-    heros_features = data_process_1.map_heros_data_matrix(heros_data,heros_dict)
-    test_heros_features = data_process_1.map_heros_data_matrix(test_heros_data,heros_dict)
-    print(heros_features.shape)
-    train(heros_features,results_data,test_heros_features,test_results_data)
+    # heros_id = np.arange(1, 121)
+    # heros_id_matrix = data_process_1.vec_bin_array(heros_id,7)
+    # heros_dict = dict(zip(heros_id,heros_id_matrix))
+    # # print(heros_dict)
+    # heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
+    # test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data_2.csv')
+    # # results_data = np.transpose(results_data)
+    # # print(results_data.shape)
+    # test_results_data = np.reshape(test_results_data,[30000,1])
+    # results_data = np.reshape(results_data,[30000,1])
+    # # print(results_data)
+    # print(heros_data.shape)
+    # #  todo: sort heros of both team by positions: carry, mid, initiate, support.
+    # heros_features = data_process_1.map_heros_data_matrix(heros_data,heros_dict)
+    # test_heros_features = data_process_1.map_heros_data_matrix(test_heros_data,heros_dict)
+    # print(heros_features.shape)
+    # train(heros_features,results_data,test_heros_features,test_results_data)
 
 
 
