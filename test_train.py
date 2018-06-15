@@ -15,12 +15,12 @@ heros_id_matrix = data_process_1.vec_bin_array(heros_id, 7)
 heros_dict = dict(zip(heros_id, heros_id_matrix))
 
 # get training data and test data
-heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
-test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data_2.csv')
+heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data_3.csv')
+# test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
 
 # test_results_data = np.reshape(test_results_data, [30000, 2])
 
-results_data = np.reshape(results_data, [30000, 2])
+results_data = np.reshape(results_data, [40000, 2])
 # print(test_results_data)
 # print(results_data)
 
@@ -32,12 +32,12 @@ results_data = np.reshape(results_data, [30000, 2])
 ##map the heros data to a binary matrix
 heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict)
 
-train_heros_features = heros_features[0:25000,:]
-test_heros_features = heros_features[25000:30000,:]
-train_results_data = results_data[0:25000,:]
-test_results_data = results_data[25000:30000,:]
+train_heros_features = heros_features[0:35000,:]
+test_heros_features = heros_features[35000:40000,:]
+train_results_data = results_data[0:35000,:]
+test_results_data = results_data[35000:40000,:]
 
-learning_rate = 0.2
+learning_rate = 0.1
 training_epochs = 400
 batch_size = 100
 display_step = 50
@@ -47,19 +47,22 @@ Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
     'layer_1' : tf.Variable(np.ones([70,70])),
+    'layer_2' : tf.Variable(np.ones([70,70])),
 
     'out': tf.Variable(np.ones([70,2]))
 }
 
 biases = {
     'layer_1' : tf.Variable(np.ones(70)),
+    'layer_2' : tf.Variable(np.ones(70)),
     'out': tf.Variable(np.ones(2))
 }
 
 
 def net(x,weights,biases):
     layer_1 = tf.matmul(x, weights['layer_1']) + biases['layer_1']
-    out_layer = tf.matmul(layer_1, weights['out']) + biases['out']
+    layer_2 = tf.matmul(x,weights['layer_2']) + biases['layer_2']
+    out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
     return out_layer
 
 
@@ -75,7 +78,7 @@ train = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for epoch in range(training_epochs):
-        total_batch = int(25000/batch_size)
+        total_batch = int(35000/batch_size)
         x_batches = np.array_split(train_heros_features, total_batch)
         y_batches = np.array_split(train_results_data, total_batch)
         for i in range(total_batch):
