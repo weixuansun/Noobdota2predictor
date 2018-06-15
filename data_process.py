@@ -25,7 +25,7 @@ class data_process(object):
     #json.loads() transfer json data to python data structure
     def save_data(self, data):
         #data = json.loads(data.content.decode('utf-8'))
-        f = csv.writer(open('data_2.csv', 'w'))  #
+        f = csv.writer(open('data_3.csv', 'w'))  #
         f.writerow(data[0].keys()) #header
         for row in data:
             f.writerow(row.values()) #write value
@@ -95,18 +95,18 @@ class data_process(object):
 if __name__ == '__main__':
     data_process_1 = data_process()
 
-    #  collect data from opendota
-    ###################
-    # match_data = []
-    # for step in range(300):
-    #     print(step)
-    #     raw_data = data_process_1.get_data()
-    #     raw_data = json.loads(raw_data.content.decode('utf-8'))
-    #     for item in raw_data:
-    #         match_data.append(item)
-    #     time.sleep(60)
-    # data_process_1.save_data(match_data)
+     # collect data from opendota
     ##################
+    match_data = []
+    for step in range(400):
+        print(step)
+        raw_data = data_process_1.get_data()
+        raw_data = json.loads(raw_data.content.decode('utf-8'))
+        for item in raw_data:
+            match_data.append(item)
+        time.sleep(60)
+    data_process_1.save_data(match_data)
+    #################
 
     # data_process_1.get_hero_data(1)
     # heros_id = np.arange(1, 121)

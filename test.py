@@ -36,12 +36,11 @@ test_heros_features = data_process_1.map_heros_data_matrix(test_heros_data, hero
 # print(heros_features)
 # print(test_heros_features)
 
-batch_size = 100
-total_batch = int(10000/batch_size)
-x_batches = np.array_split(heros_features, total_batch)
-y_batches = np.array_split(results_data, total_batch)
-prine(heros_features)
-print(results_data)
+train_heros_features = heros_features[0:25000,:]
+print(heros_features.shape)
+test_heros_features = heros_features[25000:30000,:]
+print(test_heros_features.shape)
 
-print(x_batches)
-print(y_batches)
+train_results_data = results_data[0:25000,:]
+
+test_results_data = results_data[25000:30000,:]
