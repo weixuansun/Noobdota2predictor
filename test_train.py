@@ -11,7 +11,7 @@ from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoi
 data_process_1 = data_process()
 
 # create heros dict
-heros_id = np.arange(1, 121)
+heros_id = np.arange(1, 115)
 heros_id_matrix = data_process_1.vec_bin_array(heros_id, 7)
 heros_dict = dict(zip(heros_id, heros_id_matrix))
 

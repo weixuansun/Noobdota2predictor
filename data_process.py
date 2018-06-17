@@ -33,8 +33,12 @@ class data_process(object):
     def get_hero_data(self, hero_id):
         heroes = requests.get('https://api.opendota.com/api/heroes')
         heroes_dict = json.loads(heroes.content.decode('utf-8'))
+        heros_id = np.arange(115)
+        heroes_dict = dict(zip(heros_id,heroes_dict))
+        # print(len(heroes_dict))
         # print(heroes_dict)
-        print(heroes_dict[hero_id-1]['localized_name'])
+        hero_name = print(heroes_dict[hero_id]['localized_name'])
+        return hero_name
         # for i in range(115):
         #     print(heroes_dict[i])
 
@@ -93,36 +97,19 @@ if __name__ == '__main__':
     data_process_1 = data_process()
 
      # collect data from opendota
-    ##################
-    match_data = []
-    for step in range(400):
-        print(step)
-        raw_data = data_process_1.get_data()
-        raw_data = json.loads(raw_data.content.decode('utf-8'))
-        for item in raw_data:
-            match_data.append(item)
-        time.sleep(60)
-    data_process_1.save_data(match_data)
-    #################
+    # ##################
+    # match_data = []
+    # for step in range(400):
+    #     print(step)
+    #     raw_data = data_process_1.get_data()
+    #     raw_data = json.loads(raw_data.content.decode('utf-8'))
+    #     for item in raw_data:
+    #         match_data.append(item)
+    #     time.sleep(60)
+    # data_process_1.save_data(match_data)
+    # #################
 
-    # data_process_1.get_hero_data(1)
-    # heros_id = np.arange(1, 121)
-    # heros_id_matrix = data_process_1.vec_bin_array(heros_id,7)
-    # heros_dict = dict(zip(heros_id,heros_id_matrix))
-    # # print(heros_dict)
-    # heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
-    # test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data_2.csv')
-    # # results_data = np.transpose(results_data)
-    # # print(results_data.shape)
-    # test_results_data = np.reshape(test_results_data,[30000,1])
-    # results_data = np.reshape(results_data,[30000,1])
-    # # print(results_data)
-    # print(heros_data.shape)
-    # #  todo: sort heros of both team by positions: carry, mid, initiate, support.
-    # heros_features = data_process_1.map_heros_data_matrix(heros_data,heros_dict)
-    # test_heros_features = data_process_1.map_heros_data_matrix(test_heros_data,heros_dict)
-    # print(heros_features.shape)
-    # train(heros_features,results_data,test_heros_features,test_results_data)
+    data_process_1.get_hero_data(113)
 
 
 

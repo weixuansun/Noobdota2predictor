@@ -36,11 +36,4 @@ test_heros_features = data_process_1.map_heros_data_matrix(test_heros_data, hero
 # print(heros_features)
 # print(test_heros_features)
 
-train_heros_features = heros_features[0:25000,:]
-print(heros_features.shape)
-test_heros_features = heros_features[25000:30000,:]
-print(test_heros_features.shape)
-
-train_results_data = results_data[0:25000,:]
-
-test_results_data = results_data[25000:30000,:]
+print(heros_dict)

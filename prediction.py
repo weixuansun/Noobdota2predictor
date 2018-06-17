@@ -19,6 +19,13 @@ heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict)
 
 # test:
 match_data = heros_data[0,:]
+print(match_data)
+match_heros = []
+for i in range(9):
+    print(match_data[i])
+    name = data_process_1.get_hero_data(int(match_data[i]))
+    match_heros.append(name)
+
 result = results_data[0,:]
 match_matrix = data_process_1.map_heros_data_matrix(heros_data, heros_dict)
 # print(match_matrix)
@@ -79,8 +86,10 @@ for i in range(121):
     # print(result[i,:])
     diff[i] = np.subtract(result[i,0], result[i,1])
 
-print(diff)
-print(np.argmax(diff, axis=0))
+# print(diff)
+worst_hero_id = np.argmin(diff)
+
+data_process_1.get_hero_data(worst_hero_id+1)
 
 # diff = np.sort(diff)
 # print(diff)
