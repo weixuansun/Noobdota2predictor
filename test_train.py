@@ -6,6 +6,7 @@ import time
 import urllib3
 import  tensorflow as tf
 from data_process import data_process
+from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
 
 data_process_1 = data_process()
 
@@ -21,13 +22,9 @@ heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/da
 # test_results_data = np.reshape(test_results_data, [30000, 2])
 
 results_data = np.reshape(results_data, [40000, 2])
-# print(test_results_data)
-# print(results_data)
-
-# print(results_data)
-# print(heros_data.shape)
 
 #  todo: sort heros of both team by positions: carry, mid, initiate, support.
+
 
 ##map the heros data to a binary matrix
 heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict)
@@ -37,8 +34,10 @@ test_heros_features = heros_features[35000:40000,:]
 train_results_data = results_data[0:35000,:]
 test_results_data = results_data[35000:40000,:]
 
-learning_rate = 0.1
-training_epochs = 400
+
+# learning_rate = 0.0008
+learning_rate = 0.3
+training_epochs = 200
 batch_size = 100
 display_step = 50
 
@@ -46,23 +45,27 @@ X = tf.placeholder(tf.float64,[None,70])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.ones([70,70])),
-    'layer_2' : tf.Variable(np.ones([70,70])),
+    'layer_1' : tf.Variable(np.ones([70,70]), name='w_layer_1'),
+    # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
+    # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
-    'out': tf.Variable(np.ones([70,2]))
+    'out': tf.Variable(np.ones([70,2]),name='w_out')
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.ones(70)),
-    'layer_2' : tf.Variable(np.ones(70)),
-    'out': tf.Variable(np.ones(2))
+    'layer_1' : tf.Variable(np.ones(70), name='b_layer_1'),
+    # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
+    # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
+    'out': tf.Variable(np.ones(2), name='b_out')
 }
 
 
 def net(x,weights,biases):
     layer_1 = tf.matmul(x, weights['layer_1']) + biases['layer_1']
-    layer_2 = tf.matmul(x,weights['layer_2']) + biases['layer_2']
-    out_layer = tf.matmul(layer_2, weights['out']) + biases['out']
+    layer_1 = tf.nn.relu(layer_1)
+    # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
+    # layer_2 = tf.nn.relu(layer_2)
+    out_layer = tf.matmul(layer_1, weights['out']) + biases['out']
     return out_layer
 
 
@@ -73,6 +76,10 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=pred, labels=Y))
 train = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
+
+saver = tf.train.Saver()
+
+
 
 # launch the train
 with tf.Session() as sess:
@@ -85,18 +92,16 @@ with tf.Session() as sess:
             x = x_batches[i]
             y = y_batches[i]
             sess.run(train, feed_dict={X:x, Y:y })
-
         # if epoch % 2 == 0:
         # acc1 = sess.run(accuracy, feed_dict={X: heros_features, Y: results_data})
         # print(acc1)
         acc = sess.run(accuracy, feed_dict={X:test_heros_features, Y:test_results_data})
         print(str(acc))
-    # acc = sess.run(accuracy, feed_dict={X:test_heros_features, Y:test_results_data})
-    # print(str(acc))
-
-
-
+    save_path = saver.save(sess, 'D:/Noobdota2predictor/net_2/model_2.ckpt')
+    print("Model saved in path: %s" % save_path)
     print('training finished!')
+
+    # print_tensors_in_checkpoint_file('D:/Noobdota2predictor/net/save_net.ckpt', None, True)
 
 
 

@@ -19,7 +19,7 @@ class data_process(object):
             return response
         else:
             return None
-        #print(match_data)
+        #print(match_data)m
 
     #json.dumps() transfer python data structure to json
     #json.loads() transfer json data to python data structure
@@ -32,9 +32,6 @@ class data_process(object):
 
     def get_hero_data(self, hero_id):
         heroes = requests.get('https://api.opendota.com/api/heroes')
-        # print(heroes)
-        # print(heroes.content)
-        # print(heroes.content.decode('UTF-8'))
         heroes_dict = json.loads(heroes.content.decode('utf-8'))
         # print(heroes_dict)
         print(heroes_dict[hero_id-1]['localized_name'])
