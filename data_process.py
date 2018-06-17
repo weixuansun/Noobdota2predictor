@@ -30,15 +30,18 @@ class data_process(object):
         for row in data:
             f.writerow(row.values()) #write value
 
-    def get_hero_data(self, hero_id):
+    def get_hero_data(self):
         heroes = requests.get('https://api.opendota.com/api/heroes')
         heroes_dict = json.loads(heroes.content.decode('utf-8'))
-        heros_id = np.arange(115)
-        heroes_dict = dict(zip(heros_id,heroes_dict))
-        # print(len(heroes_dict))
         # print(heroes_dict)
-        hero_name = print(heroes_dict[hero_id]['localized_name'])
-        return hero_name
+        heroes_id = np.arange(115)
+        heroes_info_dict = dict(zip(heroes_id,heroes_dict))
+        # dict.keys()[dict.values().index()]
+        # print(len(heroes_dict))
+        id_list = []
+
+        # hero_name = print(heroes_dict[hero_id]['localized_name'])
+        return heroes_info_dict
         # for i in range(115):
         #     print(heroes_dict[i])
 
@@ -86,11 +89,12 @@ class data_process(object):
             ret[..., bit_ix] = fetch_bit_func(strs).astype("int8")
         return ret
 
-    def map_heros_data_matrix(self, heros_data, heros_dict):
+    def map_heros_data_matrix(self, heros_data, heros_dict, id_dict):
         heros_features = np.zeros([heros_data.shape[0],70])
         for i in range(heros_data.shape[0]):
             for j in range(10):
-                heros_features[i,(7*j):(7*j+7)] = heros_dict[heros_data[i,j]]
+                hero_id = id_dict[heros_data[i,j]]
+                heros_features[i,(7*j):(7*j+7)] = heros_dict[hero_id]
         return heros_features
 
 if __name__ == '__main__':
@@ -109,7 +113,18 @@ if __name__ == '__main__':
     # data_process_1.save_data(match_data)
     # #################
 
-    data_process_1.get_hero_data(113)
+
+    heros_id = np.arange(1, 116)
+    heroes_info_dict = data_process_1.get_hero_data()
+    id_list = []
+    for i in range(115):
+        id_list.append(heroes_info_dict[i]['id'])
+    print(id_list)
+    print(len(id_list))
+    id_dict = dict(zip(id_list, heros_id))
+    print(id_dict)
+
+
 
 
 

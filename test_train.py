@@ -11,9 +11,17 @@ from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoi
 data_process_1 = data_process()
 
 # create heros dict
-heros_id = np.arange(1, 115)
+heros_id = np.arange(115)
 heros_id_matrix = data_process_1.vec_bin_array(heros_id, 7)
+heroes_info_dict = data_process_1.get_hero_data()
+print(heroes_info_dict)
+id_list = []
+for i in range(115):
+    id_list.append(int(heroes_info_dict[i]['id']))
 heros_dict = dict(zip(heros_id, heros_id_matrix))
+id_dict = dict(zip(id_list,heros_id))
+print(id_dict)
+print(id_list)
 
 # get training data and test data
 heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data_3.csv')
@@ -27,7 +35,7 @@ results_data = np.reshape(results_data, [40000, 2])
 
 
 ##map the heros data to a binary matrix
-heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict)
+heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict, id_dict)
 
 train_heros_features = heros_features[0:35000,:]
 test_heros_features = heros_features[35000:40000,:]
@@ -36,7 +44,7 @@ test_results_data = results_data[35000:40000,:]
 
 
 # learning_rate = 0.0008
-learning_rate = 0.3
+learning_rate = 0.01
 training_epochs = 200
 batch_size = 100
 display_step = 50
