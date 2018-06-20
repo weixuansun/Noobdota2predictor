@@ -24,7 +24,8 @@ print(id_dict)
 print(id_list)
 
 # get training data and test data
-heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data_3.csv')
+heros_data, results_data = data_process_1.process_data('data_3.csv')
+
 # test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
 
 # test_results_data = np.reshape(test_results_data, [30000, 2])
@@ -105,7 +106,7 @@ with tf.Session() as sess:
         # print(acc1)
         acc = sess.run(accuracy, feed_dict={X:test_heros_features, Y:test_results_data})
         print(str(acc))
-    save_path = saver.save(sess, 'D:/Noobdota2predictor/net_2/model_2.ckpt')
+    save_path = saver.save(sess, 'net_2/model_2.ckpt')
     print("Model saved in path: %s" % save_path)
     print('training finished!')
 
