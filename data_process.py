@@ -39,8 +39,6 @@ class data_process(object):
         # dict.keys()[dict.values().index()]
         # print(len(heroes_dict))
         id_list = []
-
-        # hero_name = print(heroes_dict[hero_id]['localized_name'])
         return heroes_info_dict
         # for i in range(115):
         #     print(heroes_dict[i])
@@ -54,7 +52,6 @@ class data_process(object):
             data_matrix = np.zeros([int((len(f)-1)/2),12])
             for i in range(2,len(f),2):
                 # print(f[i][2])
-                # if f[i][2] =='True' or
                 data_matrix[int((i / 2) - 1), 0:2] = [1,0] if f[i][2] == 'True' or f[i][2] =='TRUE' else [0,1]
                 # print(data_matrix[int((i / 2) - 1), 0:2])
                 radiant_team = f[i][12]
@@ -69,7 +66,7 @@ class data_process(object):
         heros_data = data_matrix[0:data_matrix.shape[0],2:12]
         results_data = data_matrix[0:data_matrix.shape[0],0:2]
         # results_data = np.transpose(results_data)
-        # print(heros_data.shape)
+        print(heros_data)
         return heros_data, results_data
     # transfer match data into one shot data
     def vec_bin_array(self, arr, m):
@@ -90,11 +87,14 @@ class data_process(object):
         return ret
 
     def map_heros_data_matrix(self, heros_data, heros_dict, id_dict):
-        heros_features = np.zeros([heros_data.shape[0],70])
+        heros_features = np.zeros([heros_data.shape[0],230])
         for i in range(heros_data.shape[0]):
-            for j in range(10):
+            for j in range(5):
                 hero_id = id_dict[heros_data[i,j]]
-                heros_features[i,(7*j):(7*j+7)] = heros_dict[hero_id]
+                heros_features[i][hero_id] = 1
+            for j in range(5)：
+            hero_id = id_dict[heros_data[i, j]]
+                # heros_features[i,(7*j):(7*j+7)] = heros_dict[hero_id]
         return heros_features
 
 if __name__ == '__main__':

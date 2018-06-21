@@ -26,9 +26,10 @@ print(heros_dict)
 
 heros_data, results_data = data_process_1.process_data('D:/Noobdota2predictor/data_3.csv')
 heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict, id_dict)
+print(heros_features)
 
 # test:
-match_data = heros_data[9,:]
+match_data = heros_data[200,:]
 print(match_data)
 match_heros = []
 for i in range(10):
@@ -98,9 +99,10 @@ for i in range(121):
     # print(result[i,:])
     diff[i] = np.subtract(result[i,0], result[i,1])
 
-# print(diff)
-worst_hero_id = np.argmin(diff)
 
+print(diff)
+worst_hero_id = np.argmin(diff)
+print(worst_hero_id)
 print(heroes_info_dict[worst_hero_id]['localized_name'])
 
 # diff = np.sort(diff)

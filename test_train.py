@@ -42,6 +42,7 @@ train_heros_features = heros_features[0:35000,:]
 test_heros_features = heros_features[35000:40000,:]
 train_results_data = results_data[0:35000,:]
 test_results_data = results_data[35000:40000,:]
+print(test_heros_features.shape)
 
 
 # learning_rate = 0.0008
@@ -54,15 +55,15 @@ X = tf.placeholder(tf.float64,[None,70])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.ones([70,70]), name='w_layer_1'),
+    'layer_1' : tf.Variable(np.ones([35,35]), name='w_layer_1'),
     # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
     # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
-    'out': tf.Variable(np.ones([70,2]),name='w_out')
+    'out': tf.Variable(np.ones([35,2]),name='w_out')
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.ones(70), name='b_layer_1'),
+    'layer_1' : tf.Variable(np.ones(35), name='b_layer_1'),
     # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
     # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
     'out': tf.Variable(np.ones(2), name='b_out')
