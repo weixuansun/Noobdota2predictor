@@ -6,64 +6,56 @@ import time
 import urllib3
 import  tensorflow as tf
 from data_process import data_process
-from tensorflow.python.tools.inspect_checkpoint import print_tensors_in_checkpoint_file
+import boxx
+import pickle
 
 data_process_1 = data_process()
 
-# create heros dict
+# create dicts
 heros_id = np.arange(115)
-heros_id_matrix = data_process_1.vec_bin_array(heros_id, 7)
 heroes_info_dict = data_process_1.get_hero_data()
-print(heroes_info_dict)
 id_list = []
 for i in range(115):
     id_list.append(int(heroes_info_dict[i]['id']))
-heros_dict = dict(zip(heros_id, heros_id_matrix))
-id_dict = dict(zip(id_list,heros_id))
+id_dict = dict(zip(id_list, heros_id))
 print(id_dict)
-print(id_list)
 
-# get training data and test data
+# read match data
 heros_data, results_data = data_process_1.process_data('data_3.csv')
 
-# test_heros_data, test_results_data = data_process_1.process_data('D:/Noobdota2predictor/data.csv')
-
-# test_results_data = np.reshape(test_results_data, [30000, 2])
-
-results_data = np.reshape(results_data, [40000, 2])
+results_data = np.reshape(results_data, [20000, 2])
+# map the heros data to a binary matrix
+heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
 
 #  todo: sort heros of both team by positions: carry, mid, initiate, support.
 
+# generate training and test data
+train_heros_features = heros_features[0:15000,:]
+test_heros_features = heros_features[15000:20000,:]
+train_results_data = results_data[0:15000,:]
+test_results_data = results_data[15000:20000,:]
 
-##map the heros data to a binary matrix
-heros_features = data_process_1.map_heros_data_matrix(heros_data, heros_dict, id_dict)
-
-train_heros_features = heros_features[0:35000,:]
-test_heros_features = heros_features[35000:40000,:]
-train_results_data = results_data[0:35000,:]
-test_results_data = results_data[35000:40000,:]
-print(test_heros_features.shape)
 
 
 # learning_rate = 0.0008
-learning_rate = 0.01
+learning_rate = 0.05
 training_epochs = 200
 batch_size = 100
 display_step = 50
 
-X = tf.placeholder(tf.float64,[None,70])
+X = tf.placeholder(tf.float64,[None,230])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.ones([35,35]), name='w_layer_1'),
+    'layer_1' : tf.Variable(np.ones([230,230]), name='w_layer_1'),
     # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
     # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
-    'out': tf.Variable(np.ones([35,2]),name='w_out')
+    'out': tf.Variable(np.ones([230,2]),name='w_out')
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.ones(35), name='b_layer_1'),
+    'layer_1' : tf.Variable(np.ones(230), name='b_layer_1'),
     # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
     # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
     'out': tf.Variable(np.ones(2), name='b_out')
@@ -90,12 +82,11 @@ train = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(
 saver = tf.train.Saver()
 
 
-
 # launch the train
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for epoch in range(training_epochs):
-        total_batch = int(35000/batch_size)
+        total_batch = int(15000/batch_size)
         x_batches = np.array_split(train_heros_features, total_batch)
         y_batches = np.array_split(train_results_data, total_batch)
         for i in range(total_batch):

@@ -5,6 +5,7 @@ import csv
 import time
 import urllib3
 import  tensorflow as tf
+import boxx
 
 #url = ('https://api.opendota.com/api/matches/271145478?api_key=3ea68b18-147a-4d37-9d13-68e24a4fd033')
 #r = requests.get(url)
@@ -48,7 +49,8 @@ class data_process(object):
         with open(filename) as csv_file:
             f = csv.reader(csv_file)
             f = list(f)
-            # print(len(f))
+            # print(f)
+            print(len(f))
             data_matrix = np.zeros([int((len(f)-1)/2),12])
             for i in range(2,len(f),2):
                 # print(f[i][2])
@@ -62,11 +64,11 @@ class data_process(object):
                 # print(dire_team)
                 data_matrix[(int(i / 2) - 1), 2:7] = radiant_team[0:5]
                 data_matrix[(int(i / 2) - 1), 7:12] = dire_team[0:5]
-        # print(data_matrix)
+        # print(data_matrix.shape)
         heros_data = data_matrix[0:data_matrix.shape[0],2:12]
         results_data = data_matrix[0:data_matrix.shape[0],0:2]
         # results_data = np.transpose(results_data)
-        print(heros_data)
+        # print(heros_data)
         return heros_data, results_data
     # transfer match data into one shot data
     def vec_bin_array(self, arr, m):
@@ -86,14 +88,15 @@ class data_process(object):
             ret[..., bit_ix] = fetch_bit_func(strs).astype("int8")
         return ret
 
-    def map_heros_data_matrix(self, heros_data, heros_dict, id_dict):
+    def map_heros_data_matrix(self, heros_data, id_dict):
         heros_features = np.zeros([heros_data.shape[0],230])
         for i in range(heros_data.shape[0]):
             for j in range(5):
                 hero_id = id_dict[heros_data[i,j]]
                 heros_features[i][hero_id] = 1
-            for j in range(5)：
-            hero_id = id_dict[heros_data[i, j]]
+            for j in range(5):
+                hero_id = id_dict[heros_data[i,j+5]]
+                heros_features[i][hero_id+115] = 1
                 # heros_features[i,(7*j):(7*j+7)] = heros_dict[hero_id]
         return heros_features
 
@@ -114,15 +117,35 @@ if __name__ == '__main__':
     # #################
 
 
-    heros_id = np.arange(1, 116)
+    # heros_id = np.arange(1, 116)
+    # heroes_info_dict = data_process_1.get_hero_data()
+    # id_list = []
+    # for i in range(115):
+    #     id_list.append(heroes_info_dict[i]['id'])
+    # print(id_list)
+    # print(len(id_list))
+    # id_dict = dict(zip(id_list, heros_id))
+    # print(id_dict)
+
+    heros_id = np.arange(115)
+
     heroes_info_dict = data_process_1.get_hero_data()
+    heros_data, results_data = data_process_1.process_data('data_3.csv')
+    print(heros_data[0,:])
     id_list = []
     for i in range(115):
-        id_list.append(heroes_info_dict[i]['id'])
-    print(id_list)
-    print(len(id_list))
+        id_list.append(int(heroes_info_dict[i]['id']))
+
     id_dict = dict(zip(id_list, heros_id))
     print(id_dict)
+    boxx.loga(heros_data)
+    heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
+    # for i in range(10000):
+    print(heros_features[0,: ])
+    print(np.argmax(heros_features[0, :]))
+
+
+
 
 
 
