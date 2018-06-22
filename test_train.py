@@ -38,7 +38,7 @@ test_results_data = results_data[15000:20000,:]
 
 
 # learning_rate = 0.0008
-learning_rate = 0.05
+learning_rate = 0.01
 training_epochs = 200
 batch_size = 100
 display_step = 50
@@ -47,33 +47,37 @@ X = tf.placeholder(tf.float64,[None,230])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.ones([230,230]), name='w_layer_1'),
+    'layer_1' : tf.Variable(np.ones([115,2]), name='w_layer_1'),
     # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
     # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
-    'out': tf.Variable(np.ones([230,2]),name='w_out')
+    'out': tf.Variable(np.random.rand(115,2),name='w_out')
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.ones(230), name='b_layer_1'),
+    'layer_1' : tf.Variable(np.ones(2), name='b_layer_1'),
     # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
     # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
-    'out': tf.Variable(np.ones(2), name='b_out')
+    'out': tf.Variable(np.random.rand(2), name='b_out')
 }
 
 
 def net(x,weights,biases):
-    layer_1 = tf.matmul(x, weights['layer_1']) + biases['layer_1']
-    layer_1 = tf.nn.relu(layer_1)
+    x_radiant = x[:,0:115]
+    x_dire = x[:,115:230]
+    layer_1_radiant = tf.matmul(x_radiant, weights['layer_1']) + biases['layer_1']
+    layer_1_radiant = tf.nn.relu(layer_1_radiant)
+    layer_1_dire = tf.matmul(x_dire, weights['layer_1']) + biases['layer_1']
+    layer_1_dire = tf.nn.relu(layer_1_dire)
     # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
     # layer_2 = tf.nn.relu(layer_2)
-    out_layer = tf.matmul(layer_1, weights['out']) + biases['out']
+    out_layer = tf.subtract(layer_1_radiant,layer_1_dire)
     return out_layer
 
 
 pred = net(X,weights,biases)
 
-correct_prediction = tf.equal(tf.argmax(Y,1), tf.argmax(pred,1))
+correct_prediction = tf.equal(tf.argmax(Y,axis=1), tf.argmax(pred,axis=1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=pred, labels=Y))

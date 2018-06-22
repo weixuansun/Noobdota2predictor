@@ -48,26 +48,30 @@ X = tf.placeholder(tf.float64,[None,230])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.ones([230,230]), name='w_layer_1'),
+    'layer_1' : tf.Variable(np.ones([115,2]), name='w_layer_1'),
     # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
     # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
-    'out': tf.Variable(np.ones([230,2]),name='w_out')
+    'out': tf.Variable(np.ones([115,2]),name='w_out')
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.ones(230), name='b_layer_1'),
+    'layer_1' : tf.Variable(np.ones(2), name='b_layer_1'),
     # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
     # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
     'out': tf.Variable(np.ones(2), name='b_out')
 }
 
 def net(x,weights,biases):
-    layer_1 = tf.matmul(x, weights['layer_1']) + biases['layer_1']
-    layer_1 = tf.nn.relu(layer_1)
+    x_radiant = x[:,0:115]
+    x_dire = x[:,115:230]
+    layer_1_radiant = tf.matmul(x_radiant, weights['layer_1']) + biases['layer_1']
+    layer_1_radiant = tf.nn.relu(layer_1_radiant)
+    layer_1_dire = tf.matmul(x_dire, weights['layer_1']) + biases['layer_1']
+    layer_1_dire = tf.nn.relu(layer_1_dire)
     # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
     # layer_2 = tf.nn.relu(layer_2)
-    out_layer = tf.matmul(layer_1, weights['out']) + biases['out']
+    out_layer = tf.subtract(layer_1_radiant,layer_1_dire)
     return out_layer
 
 pred = net(X,weights,biases)
@@ -81,8 +85,8 @@ with tf.Session() as sess:
     saver.restore(sess, 'net_2/model_2.ckpt')
     print('weights', sess.run(weights))
     print('biases', sess.run(biases))
-    # result = sess.run(pred, feed_dict={X: match_matrix})
-    # print(result)
+    result = sess.run(pred, feed_dict={X: heros_features})
+    print(result, results_data)
 
     acc = sess.run(accuracy, feed_dict={X:heros_features, Y: results_data})
     print(acc)
