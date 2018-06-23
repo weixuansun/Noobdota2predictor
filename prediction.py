@@ -15,30 +15,41 @@ heroes_info_dict = data_process_1.get_hero_data()
 id_list = []
 for i in range(115):
     id_list.append(int(heroes_info_dict[i]['id']))
-id_dict = dict(zip(id_list, heros_id))
-print(id_dict)
+id_dict_1 = dict(zip(id_list, heros_id))
+id_dict_2 = dict(zip(heros_id,id_list))
+print(id_dict_1)
+print(id_dict_2)
+print(heroes_info_dict)
 
 # read match data
 heros_data, results_data = data_process_1.process_data('data_3.csv')
 
-results_data = np.reshape(results_data, [20000, 2])
+results_data = np.reshape(results_data, [40000, 2])
 # map the heros data to a binary matrix
-heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
+heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict_1)
 
 
 # test:
-# match_data = heros_data[1,:]
-# print(match_data)
-# match_heros = []
-# for i in range(10):
-#     hero_id = id_dict[match_data[i]]
-#     hero_name = heroes_info_dict[hero_id]['localized_name']
-#     match_heros.append(hero_name)
-# print(match_heros)
+# pick one match for test
+match_data = heros_data[10,:]
+print(match_data)
+match_heros = []
+for i in range(10):
+    hero_id = id_dict_1[match_data[i]]
+    hero_name = heroes_info_dict[hero_id]['localized_name']
+    match_heros.append(hero_name)
+print(match_heros)
 
-# match_matrix = data_process_1.map_heros_data_matrix(match_heros, id_dict)
+# change the first position hero, others are all the same
+heros_matrix = np.zeros([115,10])
+for i in range(115):
+    heros_matrix[i,:] = match_data
+    hero =id_dict_2[i]
+    heros_matrix[i,0] = hero
+print(heros_matrix)
 
-# print(match_matrix)
+match_matrix = data_process_1.map_heros_data_matrix(heros_matrix,id_dict_1)
+print(match_matrix)
 
 
 # print(match_data)
@@ -85,22 +96,21 @@ with tf.Session() as sess:
     saver.restore(sess, 'net_2/model_2.ckpt')
     print('weights', sess.run(weights))
     print('biases', sess.run(biases))
-    result = sess.run(pred, feed_dict={X: heros_features})
-    print(result, results_data)
+    result = sess.run(pred, feed_dict={X: match_matrix})
+    print(result)
+    # for i in range(1000):
+    #     print(result[i,:], results_data[i,:])
 
-    acc = sess.run(accuracy, feed_dict={X:heros_features, Y: results_data})
-    print(acc)
-
-diff = np.zeros([121])
-for i in range(121):
-    # print(result[i,:])
-    diff[i] = np.subtract(result[i,0], result[i,1])
+    # acc = sess.run(accuracy, feed_dict={X:heros_features, Y: results_data})
+    # print(acc)
 
 
+
+diff = (result[:,0] - result[:,1])
 print(diff)
-worst_hero_id = np.argmin(diff)
-print(worst_hero_id)
-print(heroes_info_dict[worst_hero_id]['localized_name'])
+best_hero_id = np.argmax(diff)
+# print(worst_hero_id)
+print(heroes_info_dict[best_hero_id]['localized_name'])
 
 # diff = np.sort(diff)
 # print(diff)

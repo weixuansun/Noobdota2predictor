@@ -23,17 +23,22 @@ print(id_dict)
 # read match data
 heros_data, results_data = data_process_1.process_data('data_3.csv')
 
-results_data = np.reshape(results_data, [20000, 2])
+results_data = np.reshape(results_data, [40000, 2])
 # map the heros data to a binary matrix
 heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
+print(heros_features)
+
+
 
 #  todo: sort heros of both team by positions: carry, mid, initiate, support.
 
 # generate training and test data
-train_heros_features = heros_features[0:15000,:]
-test_heros_features = heros_features[15000:20000,:]
-train_results_data = results_data[0:15000,:]
-test_results_data = results_data[15000:20000,:]
+train_heros_features = heros_features[0:35000,:]
+test_heros_features = heros_features[35000:40000,:]
+train_results_data = results_data[0:35000,:]
+test_results_data = results_data[35000:40000,:]
+
+
 
 
 
@@ -47,7 +52,7 @@ X = tf.placeholder(tf.float64,[None,230])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.ones([115,2]), name='w_layer_1'),
+    'layer_1' : tf.Variable(np.random.rand(115,2), name='w_layer_1'),
     # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
     # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
@@ -55,7 +60,7 @@ weights = {
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.ones(2), name='b_layer_1'),
+    'layer_1' : tf.Variable(np.random.rand(2), name='b_layer_1'),
     # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
     # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
     'out': tf.Variable(np.random.rand(2), name='b_out')
@@ -90,18 +95,21 @@ saver = tf.train.Saver()
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for epoch in range(training_epochs):
-        total_batch = int(15000/batch_size)
+        avg_cost = 0
+        total_batch = int(35000/batch_size)
         x_batches = np.array_split(train_heros_features, total_batch)
         y_batches = np.array_split(train_results_data, total_batch)
         for i in range(total_batch):
             x = x_batches[i]
             y = y_batches[i]
-            sess.run(train, feed_dict={X:x, Y:y })
-        # if epoch % 2 == 0:
-        # acc1 = sess.run(accuracy, feed_dict={X: heros_features, Y: results_data})
+            _, c = sess.run([train, cost], feed_dict={X:x, Y:y })
+
+            avg_cost += c / total_batch
+        if epoch % 2 == 0:
+            print(avg_cost)
         # print(acc1)
         acc = sess.run(accuracy, feed_dict={X:test_heros_features, Y:test_results_data})
-        print(str(acc))
+        # print(str(acc))
     save_path = saver.save(sess, 'net_2/model_2.ckpt')
     print("Model saved in path: %s" % save_path)
     print('training finished!')

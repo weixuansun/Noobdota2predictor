@@ -103,7 +103,7 @@ class data_process(object):
 if __name__ == '__main__':
     data_process_1 = data_process()
 
-     # collect data from opendota
+    #  collect data from opendota
     # ##################
     # match_data = []
     # for step in range(400):
@@ -138,11 +138,13 @@ if __name__ == '__main__':
 
     id_dict = dict(zip(id_list, heros_id))
     print(id_dict)
-    boxx.loga(heros_data)
+    # boxx.loga(heros_data)
     heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
     # for i in range(10000):
     print(heros_features[0,: ])
     print(np.argmax(heros_features[0, :]))
+
+
 
 
 
