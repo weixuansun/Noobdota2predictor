@@ -9,6 +9,9 @@ from data_process import data_process
 import boxx
 import pickle
 
+'''This predictor is a binary predictor and can predict which team will win in the match, 
+the shortcome is that it somehow cannot give a win rate prediction information.'''
+
 data_process_1 = data_process()
 
 # create dicts
@@ -33,10 +36,10 @@ print(heros_features)
 #  todo: sort heros of both team by positions: carry, mid, initiate, support.
 
 # generate training and test data
-train_heros_features = heros_features[0:35000,:]
-test_heros_features = heros_features[35000:40000,:]
-train_results_data = results_data[0:35000,:]
-test_results_data = results_data[35000:40000,:]
+train_heros_features = heros_features[0:30000,:]
+test_heros_features = heros_features[30000:40000,:]
+train_results_data = results_data[0:30000,:]
+test_results_data = results_data[30000:40000,:]
 
 
 
@@ -52,16 +55,16 @@ X = tf.placeholder(tf.float64,[None,230])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.random.rand(115,2), name='w_layer_1'),
-    # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
+    'layer_1' : tf.Variable(np.random.rand(115,115), name='w_layer_1'),
+    'layer_2' : tf.Variable(np.random.rand(115,2), name='w_layer_2'),
     # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
     'out': tf.Variable(np.random.rand(115,2),name='w_out')
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.random.rand(2), name='b_layer_1'),
-    # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
+    'layer_1' : tf.Variable(np.random.rand(115), name='b_layer_1'),
+    'layer_2' : tf.Variable(np.random.rand(2), name='b_layer_2'),
     # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
     'out': tf.Variable(np.random.rand(2), name='b_out')
 }
@@ -70,13 +73,21 @@ biases = {
 def net(x,weights,biases):
     x_radiant = x[:,0:115]
     x_dire = x[:,115:230]
+    # layer_1
     layer_1_radiant = tf.matmul(x_radiant, weights['layer_1']) + biases['layer_1']
     layer_1_radiant = tf.nn.relu(layer_1_radiant)
     layer_1_dire = tf.matmul(x_dire, weights['layer_1']) + biases['layer_1']
     layer_1_dire = tf.nn.relu(layer_1_dire)
+    # layer_2
+    layer_2_radiant = tf.matmul(layer_1_radiant, weights['layer_2']) + biases['layer_2']
+    layer_2_radiant = tf.nn.relu(layer_2_radiant)
+    layer_2_dire = tf.matmul(layer_1_dire, weights['layer_2']) + biases['layer_2']
+    layer_2_dire = tf.nn.relu(layer_2_dire)
+
+
     # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
     # layer_2 = tf.nn.relu(layer_2)
-    out_layer = tf.subtract(layer_1_radiant,layer_1_dire)
+    out_layer = tf.add(layer_2_radiant,layer_2_dire)
     return out_layer
 
 
@@ -85,7 +96,7 @@ pred = net(X,weights,biases)
 correct_prediction = tf.equal(tf.argmax(Y,axis=1), tf.argmax(pred,axis=1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=pred, labels=Y))
+cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=pred, labels=Y))
 train = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
 
 saver = tf.train.Saver()
@@ -96,7 +107,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for epoch in range(training_epochs):
         avg_cost = 0
-        total_batch = int(35000/batch_size)
+        total_batch = int(30000/batch_size)
         x_batches = np.array_split(train_heros_features, total_batch)
         y_batches = np.array_split(train_results_data, total_batch)
         for i in range(total_batch):
@@ -108,11 +119,12 @@ with tf.Session() as sess:
         if epoch % 2 == 0:
             print(avg_cost)
         # print(acc1)
-        acc = sess.run(accuracy, feed_dict={X:test_heros_features, Y:test_results_data})
-        # print(str(acc))
+
     save_path = saver.save(sess, 'net_2/model_2.ckpt')
     print("Model saved in path: %s" % save_path)
     print('training finished!')
+    acc = sess.run(accuracy, feed_dict={X:test_heros_features, Y:test_results_data})
+    print(str(acc))
 
     # print_tensors_in_checkpoint_file('D:/Noobdota2predictor/net/save_net.ckpt', None, True)
 

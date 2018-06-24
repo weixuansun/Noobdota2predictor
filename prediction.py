@@ -31,7 +31,8 @@ heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict_1)
 
 # test:
 # pick one match for test
-match_data = heros_data[10,:]
+match_data = heros_data[1440,:]
+print(results_data[71,:])
 print(match_data)
 match_heros = []
 for i in range(10):
@@ -46,7 +47,8 @@ for i in range(115):
     heros_matrix[i,:] = match_data
     hero =id_dict_2[i]
     heros_matrix[i,0] = hero
-print(heros_matrix)
+# print(heros_matrix)
+
 
 match_matrix = data_process_1.map_heros_data_matrix(heros_matrix,id_dict_1)
 print(match_matrix)
@@ -59,30 +61,39 @@ X = tf.placeholder(tf.float64,[None,230])
 Y = tf.placeholder(tf.float64,[None,2])
 
 weights = {
-    'layer_1' : tf.Variable(np.ones([115,2]), name='w_layer_1'),
-    # 'layer_2' : tf.Variable(np.ones([70,70]), name='w_layer_2'),
+    'layer_1' : tf.Variable(np.random.rand(115,115), name='w_layer_1'),
+    'layer_2' : tf.Variable(np.random.rand(115,2), name='w_layer_2'),
     # 'layer_3' : tf.Variable(np.ones([70,70]), name='w_layer_3'),
 
-    'out': tf.Variable(np.ones([115,2]),name='w_out')
+    'out': tf.Variable(np.random.rand(115,2),name='w_out')
 }
 
 biases = {
-    'layer_1' : tf.Variable(np.ones(2), name='b_layer_1'),
-    # 'layer_2' : tf.Variable(np.ones(70), name='b_layer_2'),
+    'layer_1' : tf.Variable(np.random.rand(115), name='b_layer_1'),
+    'layer_2' : tf.Variable(np.random.rand(2), name='b_layer_2'),
     # 'layer_3' : tf.Variable(np.ones(70), name='b_layer_3'),
-    'out': tf.Variable(np.ones(2), name='b_out')
+    'out': tf.Variable(np.random.rand(2), name='b_out')
 }
+
 
 def net(x,weights,biases):
     x_radiant = x[:,0:115]
     x_dire = x[:,115:230]
+    # layer_1
     layer_1_radiant = tf.matmul(x_radiant, weights['layer_1']) + biases['layer_1']
     layer_1_radiant = tf.nn.relu(layer_1_radiant)
     layer_1_dire = tf.matmul(x_dire, weights['layer_1']) + biases['layer_1']
     layer_1_dire = tf.nn.relu(layer_1_dire)
+    # layer_2
+    layer_2_radiant = tf.matmul(layer_1_radiant, weights['layer_2']) + biases['layer_2']
+    layer_2_radiant = tf.nn.relu(layer_2_radiant)
+    layer_2_dire = tf.matmul(layer_1_dire, weights['layer_2']) + biases['layer_2']
+    layer_2_dire = tf.nn.relu(layer_2_dire)
+
+
     # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
     # layer_2 = tf.nn.relu(layer_2)
-    out_layer = tf.subtract(layer_1_radiant,layer_1_dire)
+    out_layer = tf.nn.softmax(tf.add(layer_2_radiant,layer_2_dire))
     return out_layer
 
 pred = net(X,weights,biases)
@@ -96,21 +107,24 @@ with tf.Session() as sess:
     saver.restore(sess, 'net_2/model_2.ckpt')
     print('weights', sess.run(weights))
     print('biases', sess.run(biases))
-    result = sess.run(pred, feed_dict={X: match_matrix})
-    print(result)
-    # for i in range(1000):
-    #     print(result[i,:], results_data[i,:])
+    result = sess.run(pred, feed_dict={X: heros_features})
 
-    # acc = sess.run(accuracy, feed_dict={X:heros_features, Y: results_data})
-    # print(acc)
+    for i in range(1000):
+        print(result[i,:], results_data[i,:])
+    #
+    acc = sess.run(accuracy, feed_dict={X:heros_features, Y: results_data})
+    print('acc: %s' % acc)
 
 
 
-diff = (result[:,0] - result[:,1])
-print(diff)
-best_hero_id = np.argmax(diff)
-# print(worst_hero_id)
-print(heroes_info_dict[best_hero_id]['localized_name'])
+
+#
+# diff = (result[:,0] - result[:,1])
+# # print(diff)
+# best_hero_id = np.argmax(result[:,0])
+# print(best_hero_id)
+# print(result[best_hero_id,:])
+# print(heroes_info_dict[best_hero_id]['localized_name'])
 
 # diff = np.sort(diff)
 # print(diff)
