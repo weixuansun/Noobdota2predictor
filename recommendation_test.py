@@ -115,8 +115,10 @@ with tf.Session() as sess:
     saver.restore(sess, 'recc/model.ckpt')
     print('weights', sess.run(weights))
     print('biases', sess.run(biases))
+    trained_weights = sess.run(weights)
+    print(trained_weights)
     # result = sess.run(pred, feed_dict={X: heros_features})
-    test_result = []
+    # test_result = []
     # for i in range(115):
     #     if id_dict_2[i] not in match_data[1:-1]:
     #         match_data[0] = id_dict_2[i]
