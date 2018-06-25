@@ -49,8 +49,6 @@ class data_process(object):
         with open(filename) as csv_file:
             f = csv.reader(csv_file)
             f = list(f)
-            # print(f)
-            print(len(f))
             data_matrix = np.zeros([int((len(f)-1)/2),12])
             for i in range(2,len(f),2):
                 # print(f[i][2])

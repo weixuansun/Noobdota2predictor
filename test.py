@@ -13,8 +13,13 @@ data_process_1 = data_process()
 
 list = np.array([[1, 2, 3],
                  [-1, 2, -4]])
-a = tf.argmax(list,1)
+# a = tf.argmax(list,1)
+#
+# with tf.Session() as sess:
+#     b = sess.run(a)
+#     print(b)
+b = [1,2,3,4]
 
-with tf.Session() as sess:
-    b = sess.run(a)
-    print(b)
+a = np.delete(list,0,1)
+print(b[-1])
+

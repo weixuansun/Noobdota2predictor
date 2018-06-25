@@ -24,9 +24,9 @@ id_dict = dict(zip(id_list, heros_id))
 print(id_dict)
 
 # read match data
-heros_data, results_data = data_process_1.process_data('data_3.csv')
+heros_data, results_data = data_process_1.process_data('data_2.csv')
 
-results_data = np.reshape(results_data, [40000, 2])
+results_data = np.reshape(results_data, [30000, 2])
 # map the heros data to a binary matrix
 heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
 print(heros_features)
@@ -36,16 +36,16 @@ print(heros_features)
 #  todo: sort heros of both team by positions: carry, mid, initiate, support.
 
 # generate training and test data
-train_heros_features = heros_features[0:30000,:]
-test_heros_features = heros_features[30000:40000,:]
-train_results_data = results_data[0:30000,:]
-test_results_data = results_data[30000:40000,:]
+train_heros_features = heros_features[0:20000,:]
+test_heros_features = heros_features[20000:30000,:]
+train_results_data = results_data[0:20000,:]
+test_results_data = results_data[20000:30000,:]
 
 
 
 
 
-# learning_rate = 0.0008
+
 learning_rate = 0.01
 training_epochs = 200
 batch_size = 100
@@ -107,7 +107,7 @@ with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for epoch in range(training_epochs):
         avg_cost = 0
-        total_batch = int(30000/batch_size)
+        total_batch = int(20000/batch_size)
         x_batches = np.array_split(train_heros_features, total_batch)
         y_batches = np.array_split(train_results_data, total_batch)
         for i in range(total_batch):
