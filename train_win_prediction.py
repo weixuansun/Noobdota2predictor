@@ -24,9 +24,9 @@ id_dict = dict(zip(id_list, heros_id))
 print(id_dict)
 
 # read match data
-heros_data, results_data = data_process_1.process_data('data_2.csv')
+heros_data, results_data = data_process_1.process_data('data_3.csv')
 
-results_data = np.reshape(results_data, [30000, 2])
+results_data = np.reshape(results_data, [40000, 2])
 # map the heros data to a binary matrix
 heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
 print(heros_features)
@@ -36,10 +36,10 @@ print(heros_features)
 #  todo: sort heros of both team by positions: carry, mid, initiate, support.
 
 # generate training and test data
-train_heros_features = heros_features[0:20000,:]
-test_heros_features = heros_features[20000:30000,:]
-train_results_data = results_data[0:20000,:]
-test_results_data = results_data[20000:30000,:]
+train_heros_features = heros_features[0:30000,:]
+test_heros_features = heros_features[30000:40000,:]
+train_results_data = results_data[0:30000,:]
+test_results_data = results_data[30000:40000,:]
 
 
 
@@ -87,7 +87,7 @@ def net(x,weights,biases):
 
     # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
     # layer_2 = tf.nn.relu(layer_2)
-    out_layer = tf.add(layer_2_radiant,layer_2_dire)
+    out_layer = tf.subtract(layer_2_radiant,layer_2_dire)
     return out_layer
 
 

@@ -89,7 +89,7 @@ def net(x,weights,biases):
 
     # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
     # layer_2 = tf.nn.relu(layer_2)
-    out_layer = (tf.add(layer_2_radiant,layer_2_dire))
+    out_layer = tf.nn.softmax(tf.subtract(layer_2_radiant,layer_2_dire))
     return out_layer
 
 pred = net(X,weights,biases)
@@ -101,23 +101,29 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 saver = tf.train.Saver()
 with tf.Session() as sess:
     saver.restore(sess, 'net_2/model_2.ckpt')
-    print('weights', sess.run(weights))
-    print('biases', sess.run(biases))
-    for i in range(115):
-        if id_dict_2[i] not in match_data[1:-1]:
-            match_data[0] = id_dict_2[i]
-            test_match_matrix = np.reshape(match_data,[1,10])
-            print(test_match_matrix)
-            heros_matrix = data_process_1.map_heros_data_matrix(test_match_matrix, id_dict_1)
-            print(heros_matrix)
-            result = sess.run(pred, feed_dict={X: heros_matrix})
-            print(result)
+    # print('weights', sess.run(weights))
+    # print('biases', sess.run(biases))
+
+    # for i in range(115):
+    #     if id_dict_2[i] not in match_data[1:-1]:
+    #         match_data[0] = id_dict_2[i]
+    #         test_match_matrix = np.reshape(match_data,[1,10])
+    #         print(test_match_matrix)
+    #         heros_matrix = data_process_1.map_heros_data_matrix(test_match_matrix, id_dict_1)
+    #         print(heros_matrix)
+    #         result = sess.run(pred, feed_dict={X: heros_matrix})
+    #         print(result)
+
+    result = sess.run(pred, feed_dict={X:heros_features})
+    for i in range(1000):
+        print(result[i,:],results_data[i,:])
+
 
     # for i in range(1000):
     #     print(result[i,:], results_data[i,:])
     #
-    # acc = sess.run(accuracy, feed_dict={X:heros_features, Y: results_data})
-    # print('acc: %s' % acc)
+    acc = sess.run(accuracy, feed_dict={X:heros_features, Y: results_data})
+    print('acc: %s' % acc)
 
 
 

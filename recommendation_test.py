@@ -49,7 +49,7 @@ results_data = np.reshape(results,[size,1])
 
 # test:
 # pick one match for test
-match_data = heros_data[6000,:]
+match_data = heros_data[0,:]
 # print(results_data[71,:])
 print(match_data)
 match_heros = []
@@ -92,12 +92,12 @@ def net(x,weights,biases):
     layer_2_radiant = tf.matmul(layer_1_radiant, weights['layer_2']) + biases['layer_2']
     layer_2_radiant = tf.nn.relu(layer_2_radiant)
     layer_2_dire = tf.matmul(layer_1_dire, weights['layer_2']) + biases['layer_2']
-    layer_2_dire = tf.nn.relu(layer_2_dire)
+    layer_2_dire = (tf.nn.relu(layer_2_dire))
 
 
     # layer_2 = tf.matmul(layer_1,weights['layer_2']) + biases['layer_2']
     # layer_2 = tf.nn.relu(layer_2)
-    out_layer = tf.subtract(layer_2_radiant,layer_2_dire)
+    out_layer = (tf.subtract(layer_2_radiant,layer_2_dire))
     # out_layer = tf.nn.sig
     return out_layer
 
@@ -113,28 +113,33 @@ pred = net(X,weights,biases)
 saver = tf.train.Saver()
 with tf.Session() as sess:
     saver.restore(sess, 'recc/model.ckpt')
-    print('weights', sess.run(weights))
-    print('biases', sess.run(biases))
+    # print('weights', sess.run(weights))
+    # print('biases', sess.run(biases))
     trained_weights = sess.run(weights)
-    print(trained_weights)
+    print(((trained_weights['layer_2'])))
+    print((np.argmax(trained_weights['layer_2'])))
+    print((np.max(trained_weights['layer_2'])))
     # result = sess.run(pred, feed_dict={X: heros_features})
-    # test_result = []
-    # for i in range(115):
-    #     if id_dict_2[i] not in match_data[1:-1]:
-    #         match_data[0] = id_dict_2[i]
-    #         test_match_matrix = np.reshape(match_data,[1,10])
-    #         print(test_match_matrix)
-    #         heros_matrix = data_process_1.map_heros_data_matrix(test_match_matrix, id_dict_1)
-    #         print(heros_matrix)
-    #         result = sess.run(pred, feed_dict={X: heros_matrix})
-    #         test_result.append(result[0][0])
-    # print(np.max(test_result))
-    # print(np.argmax(test_result))
-    # print(test_result)
 
-    output = sess.run(pred, feed_dict={X:heros_features})
-    for i in range(10000):
-        print(output[i], results_data[i])
+    # Test
+    test_result = []
+    for i in range(115):
+        if id_dict_2[i] not in match_data[1:-1]:
+            match_data[0] = id_dict_2[i]
+            test_match_matrix = np.reshape(match_data,[1,10])
+            # print(test_match_matrix)
+            heros_matrix = data_process_1.map_heros_data_matrix(test_match_matrix, id_dict_1)
+            # print(heros_matrix)
+            result = sess.run(pred, feed_dict={X: heros_matrix})
+            test_result.append(result[0][0])
+    print(np.max(test_result))
+    print(np.argmax(test_result))
+    print(test_result)
+    ###########
+
+    # output = sess.run(pred, feed_dict={X:heros_features})
+    # for i in range(10000):
+    #     print(output[i], results_data[i])
 
     # for i in range(1000):
     #     print(result[i,:], results_data[i,:])

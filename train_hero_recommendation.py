@@ -49,8 +49,8 @@ results_data = np.reshape(results,[size,1])
 train_size = size-5000
 train_heros_features = heros_features[0:train_size,:]
 test_heros_features = heros_features[train_size:size,:]
-train_results_data = results[0:train_size]
-test_results_data = results[train_size:size]
+train_results_data = results_data[0:train_size]
+test_results_data = results_data[train_size:size]
 
 
 # training parameters
