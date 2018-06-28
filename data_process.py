@@ -12,22 +12,35 @@ import pickle
 #r = requests.get(url)
 
 class data_process(object):
-    def get_data(self):
+    def fetch_data(self,amount):
+        '''
+        get data from openDota api
+        :return: reponse from api
+        '''
         #match_data = requests.get('https://api.opendota.com/api/matches/3919387348')
-        parameters = {'mmr_descending':'mmr_descending'}
-        response = requests.get('https://api.opendota.com/api/publicMatches',params=parameters)
-        #print(response.content.decode('utf-8'))
-        if response.status_code ==200:
-            return response
-        else:
-            return None
+
+        match_data = []
+        for step in range(amount):
+            print(step)
+            try:
+                parameters = {'mmr_descending': 'mmr_descending'}
+                response = requests.get('https://api.opendota.com/api/publicMatches', params=parameters)
+                # print(response.content.decode('utf-8'))
+            except:
+                raise Exception('Error! cannot get data！')
+            raw_data = json.loads(response.content.decode('utf-8'))
+            for item in raw_data:
+                match_data.append(item)
+            time.sleep(1)
+        data_process_1.save_data(match_data)
+
         #print(match_data)m
 
     #json.dumps() transfer python data structure to json
     #json.loads() transfer json data to python data structure
     def save_data(self, data):
         #data = json.loads(data.content.decode('utf-8'))
-        f = csv.writer(open('data_3.csv', 'w'))  #
+        f = csv.writer(open('data_5.csv', 'w'))  #
         f.writerow(data[0].keys()) #header
         for row in data:
             f.writerow(row.values()) #write value
@@ -68,6 +81,11 @@ class data_process(object):
 
     ##process csv match data for training
     def process_data(self,filename):
+        '''
+        read match csv data into array
+        :param filename:
+        :return: heros_data, results_data
+        '''
         with open(filename) as csv_file:
             f = csv.reader(csv_file)
             f = list(f)
@@ -90,7 +108,28 @@ class data_process(object):
         # results_data = np.transpose(results_data)
         # print(heros_data)
         return heros_data, results_data
-    # transfer match data into one shot data
+    # def sort_heroes_positions(self, heros_data):
+    #     '''
+    #     sort heroes by positions: carry mid, initiate, support..
+    #     '''
+        pkl_file = open('heroes_info_dict.pkl', 'rb')
+        heroes_info_dict = pickle.load(pkl_file)
+        pkl_file.close()
+        pkl_file = open('id_dict_1.pkl', 'rb')
+        id_dict_1 = pickle.load(pkl_file)
+        pkl_file.close()
+        pkl_file = open('id_dict_2.pkl', 'rb')
+        id_dict_2 = pickle.load(pkl_file)
+        pkl_file.close()
+        sorted_heroes_data = np.zeros(10)
+        for i in range(5):
+            hero_id = id_dict_1[heros_data[i]]
+            hero_position = heroes_info_dict[hero_id]['roles']
+
+
+
+
+
     def vec_bin_array(self, arr, m):
         """
         Arguments:
@@ -109,6 +148,12 @@ class data_process(object):
         return ret
 
     def map_heros_data_matrix(self, heros_data, id_dict):
+        '''
+        map heros id to one hot matrix
+        :param heros_data:
+        :param id_dict:
+        :return:
+        '''
         heros_features = np.zeros([heros_data.shape[0],230])
         for i in range(heros_data.shape[0]):
             for j in range(5):
@@ -124,17 +169,7 @@ if __name__ == '__main__':
     data_process_1 = data_process()
 
     #  collect data from opendota
-    # ##################
-    # match_data = []
-    # for step in range(400):
-    #     print(step)
-    #     raw_data = data_process_1.get_data()
-    #     raw_data = json.loads(raw_data.content.decode('utf-8'))
-    #     for item in raw_data:
-    #         match_data.append(item)
-    #     time.sleep(60)
-    # data_process_1.save_data(match_data)
-    # #################
+    # data_process_1.fetch_data(10)
 
 
     # heros_id = np.arange(1, 116)
@@ -149,7 +184,7 @@ if __name__ == '__main__':
 
     # heros_id = np.arange(115)
 
-    data_process_1.get_hero_data()
+
     # heros_data, results_data = data_process_1.process_data('data_3.csv')
     # print(heros_data[0,:])
     # id_list = []
@@ -164,21 +199,22 @@ if __name__ == '__main__':
     # print(heros_features[0,: ])
     # print(np.argmax(heros_features[0, :]))
 
-
-
-
+    data_process_1.get_hero_data()
     data_process_1.save_id_dict()
     pkl_file = open('heroes_info_dict.pkl', 'rb')
     heroes_info_dict = pickle.load(pkl_file)
-    pkl_file.close()
-    pkl_file = open('id_dict_1.pkl', 'rb')
-    id_dict_1 = pickle.load(pkl_file)
-    pkl_file.close()
-    pkl_file = open('id_dict_2.pkl', 'rb')
-    id_dict_2 = pickle.load(pkl_file)
-    pkl_file.close()
-    print(id_dict_1)
-    print(id_dict_2)
+    print(heroes_info_dict)
+
+    # pkl_file.close()
+    # pkl_file = open('id_dict_1.pkl', 'rb')
+    # id_dict_1 = pickle.load(pkl_file)
+    # pkl_file.close()
+    # pkl_file = open('id_dict_2.pkl', 'rb')
+    # id_dict_2 = pickle.load(pkl_file)
+    # pkl_file.close()
+    #
+
+
 
 
 
