@@ -11,17 +11,20 @@ import pickle
 
 data_process_1 = data_process()
 
-# create dicts
-heros_id = np.arange(115)
+# read dicts
+
 # heroes_info_dict = data_process_1.get_hero_data()
 pkl_file = open('heroes_info_dict.pkl', 'rb')
 heroes_info_dict = pickle.load(pkl_file)
 pkl_file.close()
-id_list = []
-for i in range(115):
-    id_list.append(int(heroes_info_dict[i]['id']))
-id_dict_1 = dict(zip(id_list, heros_id))
-id_dict_2 = dict(zip(heros_id,id_list))
+pkl_file = open('id_dict_1.pkl', 'rb')
+id_dict_1 = pickle.load(pkl_file)
+pkl_file.close()
+pkl_file = open('id_dict_2.pkl', 'rb')
+id_dict_2 = pickle.load(pkl_file)
+pkl_file.close()
+
+
 # print(id_dict_1)
 # print(id_dict_2)
 # print(heroes_info_dict)

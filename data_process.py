@@ -47,6 +47,24 @@ class data_process(object):
         # return heroes_info_dict
         # for i in range(115):
         #     print(heroes_dict[i])
+    def save_id_dict(self):
+        pkl_file = open('heroes_info_dict.pkl', 'rb')
+        heroes_info_dict = pickle.load(pkl_file)
+        pkl_file.close()
+
+        heros_id = np.arange(115)
+        id_list = []
+        for i in range(115):
+            id_list.append(int(heroes_info_dict[i]['id']))
+        id_dict_1 = dict(zip(id_list, heros_id))
+        id_dict_2 = dict(zip(heros_id, id_list))
+        output_1 = open('id_dict_1.pkl','wb')
+        output_2 = open('id_dict_2.pkl', 'wb')
+        pickle.dump(id_dict_1,output_1)
+        pickle.dump(id_dict_2,output_2)
+        output_1.close()
+        output_2.close()
+
 
     ##process csv match data for training
     def process_data(self,filename):
@@ -146,10 +164,23 @@ if __name__ == '__main__':
     # print(heros_features[0,: ])
     # print(np.argmax(heros_features[0, :]))
 
+
+
+
+    data_process_1.save_id_dict()
     pkl_file = open('heroes_info_dict.pkl', 'rb')
     heroes_info_dict = pickle.load(pkl_file)
     pkl_file.close()
-    print(heroes_info_dict)
+    pkl_file = open('id_dict_1.pkl', 'rb')
+    id_dict_1 = pickle.load(pkl_file)
+    pkl_file.close()
+    pkl_file = open('id_dict_2.pkl', 'rb')
+    id_dict_2 = pickle.load(pkl_file)
+    pkl_file.close()
+    print(id_dict_1)
+    print(id_dict_2)
+
+
 
 
 
