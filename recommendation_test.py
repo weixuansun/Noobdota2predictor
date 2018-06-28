@@ -13,7 +13,10 @@ data_process_1 = data_process()
 
 # create dicts
 heros_id = np.arange(115)
-heroes_info_dict = data_process_1.get_hero_data()
+# heroes_info_dict = data_process_1.get_hero_data()
+pkl_file = open('heroes_info_dict.pkl', 'rb')
+heroes_info_dict = pickle.load(pkl_file)
+pkl_file.close()
 id_list = []
 for i in range(115):
     id_list.append(int(heroes_info_dict[i]['id']))

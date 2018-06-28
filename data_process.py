@@ -6,6 +6,7 @@ import time
 import urllib3
 import  tensorflow as tf
 import boxx
+import pickle
 
 #url = ('https://api.opendota.com/api/matches/271145478?api_key=3ea68b18-147a-4d37-9d13-68e24a4fd033')
 #r = requests.get(url)
@@ -40,7 +41,10 @@ class data_process(object):
         # dict.keys()[dict.values().index()]
         # print(len(heroes_dict))
         id_list = []
-        return heroes_info_dict
+        output = open('heroes_info_dict.pkl','wb')
+        pickle.dump(heroes_info_dict,output)
+        output.close()
+        # return heroes_info_dict
         # for i in range(115):
         #     print(heroes_dict[i])
 
@@ -125,23 +129,27 @@ if __name__ == '__main__':
     # id_dict = dict(zip(id_list, heros_id))
     # print(id_dict)
 
-    heros_id = np.arange(115)
+    # heros_id = np.arange(115)
 
-    heroes_info_dict = data_process_1.get_hero_data()
-    heros_data, results_data = data_process_1.process_data('data_3.csv')
-    print(heros_data[0,:])
-    id_list = []
-    for i in range(115):
-        id_list.append(int(heroes_info_dict[i]['id']))
+    data_process_1.get_hero_data()
+    # heros_data, results_data = data_process_1.process_data('data_3.csv')
+    # print(heros_data[0,:])
+    # id_list = []
+    # for i in range(115):
+    #     id_list.append(int(heroes_info_dict[i]['id']))
+    #
+    # id_dict = dict(zip(id_list, heros_id))
+    # print(id_dict)
+    # # boxx.loga(heros_data)
+    # heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
+    # # for i in range(10000):
+    # print(heros_features[0,: ])
+    # print(np.argmax(heros_features[0, :]))
 
-    id_dict = dict(zip(id_list, heros_id))
-    print(id_dict)
-    # boxx.loga(heros_data)
-    heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
-    # for i in range(10000):
-    print(heros_features[0,: ])
-    print(np.argmax(heros_features[0, :]))
-
+    pkl_file = open('heroes_info_dict.pkl', 'rb')
+    heroes_info_dict = pickle.load(pkl_file)
+    pkl_file.close()
+    print(heroes_info_dict)
 
 
 
