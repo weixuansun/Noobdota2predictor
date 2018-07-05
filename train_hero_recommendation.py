@@ -8,17 +8,23 @@ import  tensorflow as tf
 from data_process import data_process
 import boxx
 import pickle
+from random import seed
+from random import randint
 
 data_process_1 = data_process()
 
-# create dicts
-heros_id = np.arange(115)
-heroes_info_dict = data_process_1.get_hero_data()
-id_list = []
-for i in range(115):
-    id_list.append(int(heroes_info_dict[i]['id']))
+# heroes_info_dict = data_process_1.get_hero_data()
+pkl_file = open('heroes_info_dict.pkl', 'rb')
+heroes_info_dict = pickle.load(pkl_file)
+pkl_file.close()
+pkl_file = open('id_dict_1.pkl', 'rb')
+id_dict_1 = pickle.load(pkl_file)
+pkl_file.close()
+pkl_file = open('id_dict_2.pkl', 'rb')
+id_dict_2 = pickle.load(pkl_file)
+pkl_file.close()
 
-id_dict = dict(zip(id_list, heros_id))
+
 # read match data
 heros_data, results_data = data_process_1.process_data('data_3.csv')
 
@@ -27,7 +33,7 @@ size = len(heros_data)
 
 results_data = np.reshape(results_data, [size, 2])
 # map the heros data to a binary matrix
-heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict)
+heros_features = data_process_1.map_heros_data_matrix(heros_data,id_dict_1)
 print(heros_features)
 print(results_data)
 results = np.zeros(size)
@@ -47,10 +53,20 @@ results_data = np.reshape(results,[size,1])
 
 # generate training and test data
 train_size = size-5000
-train_heros_features = heros_features[0:train_size,:]
-test_heros_features = heros_features[train_size:size,:]
-train_results_data = results_data[0:train_size]
-test_results_data = results_data[train_size:size]
+value = randint(1,10)
+print(value)
+
+#  todo: change dataset divide question
+train_heros_features_1 = heros_features[0:4000*value-4000,:]
+train_heros_features_2 = heros_features[4000*value:size,:]
+train_heros_features = np.concatenate((train_heros_features_1,train_heros_features_2),axis=0)
+test_heros_features = heros_features[4000*value:4000*value+4000,:]
+train_results_data_1 = results_data[0:4000*value-4000,:]
+train_results_data_2 = results_data[4000*value:size,:]
+train_results_data = np.concatenate((train_results_data_1,train_results_data_2),axis=0)
+test_results_data = results_data[4000*value:4000*value+4000,:]
+
+
 
 
 # training parameters
