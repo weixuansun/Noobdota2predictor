@@ -39,6 +39,7 @@ class data_process(object):
     #json.dumps() transfer python data structure to json
     #json.loads() transfer json data to python data structure
     def save_data(self, data):
+        '''save fetched data to csv file'''
         #data = json.loads(data.content.decode('utf-8'))
         f = csv.writer(open('data_5.csv', 'w'))  #
         f.writerow(data[0].keys()) #header

@@ -68,7 +68,6 @@ test_results_data = results_data[4000*value:4000*value+4000,:]
 
 
 
-
 # training parameters
 learning_rate = 0.01
 training_epochs = 200

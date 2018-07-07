@@ -56,7 +56,7 @@ results_data = np.reshape(results,[size,1])
 # test:
 # pick one match for test
 match_data = heros_data[0,:]
-# print(results_data[71,:])
+print(results_data[0,:])
 print(match_data)
 match_heros = []
 for i in range(10):
@@ -137,10 +137,11 @@ with tf.Session() as sess:
             heros_matrix = data_process_1.map_heros_data_matrix(test_match_matrix, id_dict_1)
             # print(heros_matrix)
             result = sess.run(pred, feed_dict={X: heros_matrix})
+            print(result)
             test_result.append(result[0][0])
     print(np.max(test_result))
     print(np.argmax(test_result))
-    print(test_result)
+    # print(test_result)
     ###########
 
     # output = sess.run(pred, feed_dict={X:heros_features})
