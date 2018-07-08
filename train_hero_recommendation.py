@@ -26,7 +26,7 @@ pkl_file.close()
 
 
 # read match data
-heros_data, results_data = data_process_1.process_data('data_3.csv')
+heros_data, results_data = data_process_1.process_data('data_3_train.csv')
 
 size = len(heros_data)
 
@@ -60,11 +60,17 @@ print(value)
 train_heros_features_1 = heros_features[0:4000*value-4000,:]
 train_heros_features_2 = heros_features[4000*value:size,:]
 train_heros_features = np.concatenate((train_heros_features_1,train_heros_features_2),axis=0)
+print(train_heros_features.shape)
 test_heros_features = heros_features[4000*value:4000*value+4000,:]
+
 train_results_data_1 = results_data[0:4000*value-4000,:]
 train_results_data_2 = results_data[4000*value:size,:]
 train_results_data = np.concatenate((train_results_data_1,train_results_data_2),axis=0)
 test_results_data = results_data[4000*value:4000*value+4000,:]
+
+
+# train_heros_features = heros_features
+# train_results_data = results_data
 
 
 

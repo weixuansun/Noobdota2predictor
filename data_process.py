@@ -46,6 +46,31 @@ class data_process(object):
         for row in data:
             f.writerow(row.values()) #write value
 
+    def divide_dataset(self, filename):
+        '''divide dataset into train list and test list, not working now'''
+        with open(filename) as csv_file:
+            file = csv.reader(csv_file)
+            full_list = list(file)
+        train_list = full_list[2:60000]
+        print(len(train_list))
+        test_list = full_list[60000:80001]
+
+
+        #
+        f = csv.writer(open('data_3_train.csv', 'w'))  #
+        for row in train_list:
+            f.writerow(train_list)
+        f = csv.writer(open('data_3_test.csv', 'w'))  #
+        for row in test_list:
+            f.writerow(test_list)
+
+        # with open('data_3_train.csv') as csv_file:
+        #     file = csv.reader(csv_file)
+        #     data = list(file)
+        #     print(len(data))
+
+
+
     def get_hero_data(self):
         heroes = requests.get('https://api.opendota.com/api/heroes')
         heroes_dict = json.loads(heroes.content.decode('utf-8'))
@@ -93,7 +118,7 @@ class data_process(object):
             data_matrix = np.zeros([int((len(f)-1)/2),12])
             for i in range(2,len(f),2):
                 # print(f[i][2])
-                data_matrix[int((i / 2) - 1), 0:2] = [1,0] if f[i][2] == 'True' or f[i][2] =='TRUE' else [0,1]
+                data_matrix[int((i / 2)), 0:2] = [1,0] if f[i][2] == 'True' or f[i][2] =='TRUE' else [0,1]
                 # print(data_matrix[int((i / 2) - 1), 0:2])
                 radiant_team = f[i][12]
                 dire_team = f[i][13]
@@ -126,9 +151,6 @@ class data_process(object):
         for i in range(5):
             hero_id = id_dict_1[heros_data[i]]
             hero_position = heroes_info_dict[hero_id]['roles']
-
-
-
 
 
     def vec_bin_array(self, arr, m):
@@ -168,6 +190,7 @@ class data_process(object):
 
 if __name__ == '__main__':
     data_process_1 = data_process()
+    data_process_1.divide_dataset('data_3.csv')
 
     #  collect data from opendota
     # data_process_1.fetch_data(10)
@@ -200,11 +223,11 @@ if __name__ == '__main__':
     # print(heros_features[0,: ])
     # print(np.argmax(heros_features[0, :]))
 
-    data_process_1.get_hero_data()
-    data_process_1.save_id_dict()
-    pkl_file = open('heroes_info_dict.pkl', 'rb')
-    heroes_info_dict = pickle.load(pkl_file)
-    print(heroes_info_dict)
+    # data_process_1.get_hero_data()
+    # data_process_1.save_id_dict()
+    # pkl_file = open('heroes_info_dict.pkl', 'rb')
+    # heroes_info_dict = pickle.load(pkl_file)
+    # print(heroes_info_dict)
 
     # pkl_file.close()
     # pkl_file = open('id_dict_1.pkl', 'rb')
